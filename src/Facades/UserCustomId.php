@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Facade;
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
 
 /**
+ * @method static ?UserCustomId get(Model $target, Model $owner) Get the custom id for the given target.
  * @method static string getId(Model $target, Model $owner) Get the custom id for the given target.
  * @method static string getFormat(Model|string $targetOrClass, Model $owner) Get the custom id format for the given target.
  * @method static string generateFor(Model|string $targetOrClass, Model $owner) Generate a new custom id for the given target based on the format of this owner.

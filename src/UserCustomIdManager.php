@@ -3,6 +3,7 @@
 namespace Luttje\UserCustomId;
 
 use Illuminate\Database\Eloquent\Model;
+use Luttje\UserCustomId\Contracts\HasUserCustomId;
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
 use Luttje\UserCustomId\FormatChunks\Literal;
 
@@ -39,7 +40,7 @@ class UserCustomIdManager
         return $customId;
     }
 
-    public function get(Model|string $targetOrClass, Model $owner)
+    public function get(Model|string $targetOrClass, Model $owner): ?UserCustomId
     {
         $targetClass = $targetOrClass instanceof Model
             ? $targetOrClass->getMorphClass()
@@ -53,7 +54,7 @@ class UserCustomIdManager
         return $customId;
     }
 
-    public function getId(Model $target, Model $owner)
+    public function getId(Model $target, Model $owner): ?string
     {
         $customId = $this->get($target, $owner);
 
@@ -64,7 +65,7 @@ class UserCustomIdManager
         return null;
     }
 
-    public function getFormat(Model|string $targetOrClass, Model $owner)
+    public function getFormat(Model|string $targetOrClass, Model $owner): ?string
     {
         $customId = $this->get($targetOrClass, $owner);
 
@@ -78,18 +79,34 @@ class UserCustomIdManager
     /**
      * Generates a whole new custom id for the given target.
      */
-    public function generateFor(Model|string $targetOrClass, Model $owner)
+    public function generateFor(Model|string $targetOrClass, Model $owner): ?string
     {
         $customId = $this->get($targetOrClass, $owner);
 
         if ($customId) {
             $chunks = $this->generate($customId->format, $customId->last_target_custom_id);
+            $generated = $this->convertToString($chunks);
+            $isModel = $targetOrClass instanceof Model;
+            $shouldUpdateLatest = true;
 
-            $customId->update([
-                'last_target_custom_id' => $chunks,
-            ]);
+            if ($isModel) {
+                $targetOrClass->{$customId->target_attribute} = $generated;
 
-            return $this->convertToString($chunks);
+                if (in_array(HasUserCustomId::class, class_implements($targetOrClass))) {
+                    // The trait will save in the eloquent created event.
+                    $shouldUpdateLatest = false;
+                    $targetOrClass->queueCustomIdUpdate($customId, $chunks);
+                }
+            }
+
+            // TODO: somehow make sure this happens in a transaction with the save
+            if ($shouldUpdateLatest) {
+                $customId->update([
+                    'last_target_custom_id' => $chunks,
+                ]);
+            }
+
+            return $generated;
         }
 
         return null;

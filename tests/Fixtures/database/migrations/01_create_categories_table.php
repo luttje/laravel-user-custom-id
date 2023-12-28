@@ -8,7 +8,7 @@ return new class () extends Migration {
     public function up()
     {
         Schema::create('categories', function (Blueprint $table) {
-            $table->uuid()->primary();
+            $table->uuid('id')->primary();
 
             $table->string('custom_id')->unique();
 
@@ -16,6 +16,8 @@ return new class () extends Migration {
             $table->string('slug')->unique();
 
             $table->text('description')->nullable();
+
+            $table->foreignId('owner_id')->constrained();
 
             $table->timestamps();
         });

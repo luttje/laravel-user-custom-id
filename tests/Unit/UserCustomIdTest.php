@@ -7,7 +7,6 @@ use Luttje\UserCustomId\Facades\UserCustomId;
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
 use Luttje\UserCustomId\FormatChunks\Literal;
 use Luttje\UserCustomId\Tests\Fixtures\Models\Category;
-use Luttje\UserCustomId\Tests\Fixtures\Models\Product;
 use Luttje\UserCustomId\Tests\TestCase;
 use Orchestra\Testbench\Factories\UserFactory;
 
@@ -62,15 +61,54 @@ final class UserCustomIdTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testGenerateForUser()
+    public function testGenerateForClassType()
     {
         $format = 'prefix-{increment}SUFFIX';
         $expected = 'prefix-1SUFFIX';
 
         $owner = $this->createOwnerWithCustomId(Category::class, $format, 'custom_id');
 
+        $this->assertDatabaseHas('user_custom_ids', [
+            'target_type' => Category::class,
+            'target_attribute' => 'custom_id',
+            'owner_id' => $owner->id,
+        ]);
+
         $result = UserCustomId::generateFor(Category::class, $owner);
 
         $this->assertEquals($expected, $result);
+    }
+
+    public function testGenerateForClassInstance()
+    {
+        $format = 'prefix-{increment}SUFFIX';
+        $expected = 'prefix-1SUFFIX';
+
+        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'custom_id');
+
+        $category = new Category([
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+            'description' => 'This is a test category.',
+            'owner_id' => $owner->id,
+        ]);
+
+        UserCustomId::generateFor($category, $owner);
+
+        $category->save();
+
+        $result = $category->custom_id;
+
+        $this->assertEquals($expected, $result);
+
+        $ownerCustomIdExists = \Luttje\UserCustomId\UserCustomId::latest()->first();
+
+        $this->assertNotNull($ownerCustomIdExists);
+
+        $lastId = $ownerCustomIdExists->last_target_custom_id;
+
+        $this->assertNotNull($lastId);
+
+        $this->assertEquals($expected, UserCustomId::convertToString($lastId));
     }
 }
