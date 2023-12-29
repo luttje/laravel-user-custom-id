@@ -45,9 +45,9 @@ final class UserCustomIdTest extends TestCase
         return $literal;
     }
 
-    private function makeChunk(string $chunkId, mixed $value)
+    private function makeChunk(string $id, mixed $value)
     {
-        $chunkType = UserCustomId::getChunkType($chunkId);
+        $chunkType = UserCustomId::getChunkType($id);
 
         /** @var FormatChunk */
         $chunk = new $chunkType();

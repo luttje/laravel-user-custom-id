@@ -17,9 +17,14 @@ class UserCustomIdManager
         $this->formatChunkRepository->registerDefaultChunkTypes();
     }
 
-    public function getChunkType(string $chunkId): ?string
+    public function getChunkType(string $id): ?string
     {
-        return $this->formatChunkRepository->getChunkType($chunkId);
+        return $this->formatChunkRepository->getChunkType($id);
+    }
+
+    public function registerChunkType(string $chunkType): void
+    {
+        $this->formatChunkRepository->registerChunkType($chunkType);
     }
 
     public function create(Model|string $targetOrClass, Model $owner, string $format, string $targetAttribute, ?FormatChunkCollection $lastValueChunks = null)

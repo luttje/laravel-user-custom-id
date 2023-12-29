@@ -28,19 +28,15 @@ class FormatChunkRepository
         /** @var FormatChunk $chunkType */
         $id = $chunkType::getChunkId();
 
-        if (isset($this->registeredChunkTypes[$id])) {
-            throw new \Exception("The chunk type with id '{$id}' is already registered.");
-        }
-
         $this->registeredChunkTypes[$id] = $chunkType;
     }
 
     /**
      * Returns the chunk type for the given chunk id.
      */
-    public function getChunkType(string $chunkId): ?string
+    public function getChunkType(string $id): ?string
     {
-        return $this->registeredChunkTypes[$chunkId] ?? null;
+        return $this->registeredChunkTypes[$id] ?? null;
     }
 
     /**
@@ -68,8 +64,8 @@ class FormatChunkRepository
     {
         $chunkString = trim($chunkString, '{}');
         $parts = explode(':', $chunkString);
-        $chunkId = $parts[0];
-        $chunkType = $this->getChunkType($chunkId);
+        $id = $parts[0];
+        $chunkType = $this->getChunkType($id);
 
         if (! $chunkType) {
             return null;
@@ -80,7 +76,7 @@ class FormatChunkRepository
 
         if ($lastValueChunks) {
             foreach ($lastValueChunks as $lastValueChunk) {
-                if ($lastValueChunk->getChunkId() === $chunkId) {
+                if ($lastValueChunk->getChunkId() === $id) {
                     $chunk->setValue($lastValueChunk->getValue());
                     break;
                 }

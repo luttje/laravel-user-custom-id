@@ -12,12 +12,12 @@ class Increment extends FormatChunk
     public static function getParameters(): array
     {
         return [
-            new FormatChunkParameter('amount', 'integer', 1),
+            new FormatChunkParameter('amount', 'numeric', 1),
         ];
     }
 
     public function getNextValue(): string
     {
-        return (string) ((int) $this->value + (int) $this->getParameterValue('amount'));
+        return (string) ((double) $this->value + (double) $this->getParameterValue('amount'));
     }
 }

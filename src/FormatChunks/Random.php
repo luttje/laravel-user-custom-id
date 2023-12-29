@@ -32,9 +32,17 @@ class Random extends FormatChunk
         $random = '';
 
         for ($i = 0; $i < $length; $i++) {
-            $random .= $characters[rand(0, $charactersLength - 1)];
+            $random .= $characters[$this->getRandomNumber(0, $charactersLength - 1)];
         }
 
         return $random;
+    }
+
+    /**
+     * Wrapper for the rand function to make it easier to mock.
+     */
+    public function getRandomNumber(int $min, int $max): int
+    {
+        return rand($min, $max);
     }
 }

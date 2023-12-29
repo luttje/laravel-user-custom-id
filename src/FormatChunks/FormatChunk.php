@@ -34,10 +34,16 @@ abstract class FormatChunk implements Arrayable
                 throw new \Exception("The parameter '{$name}' is required for chunk type '".static::getChunkId()."'.");
             }
 
-            $valueType = gettype($value);
+            if ($type === 'numeric') {
+                if (! is_numeric($value)) {
+                    throw new \Exception("The parameter '{$name}' must be numeric, '{$value}' given.");
+                }
+            } else {
+                $valueType = gettype($value);
 
-            if ($valueType !== $type) {
-                throw new \Exception("The parameter '{$name}' must be of type '{$type}', '{$valueType}' given.");
+                if ($valueType !== $type) {
+                    throw new \Exception("The parameter '{$name}' must be of type '{$type}', '{$valueType}' given.");
+                }
             }
 
             $this->setParameterValue($name, $value);
@@ -158,7 +164,7 @@ abstract class FormatChunk implements Arrayable
     public function toArray(): array
     {
         return [
-            'chunkId' => static::getChunkId(),
+            'id' => static::getChunkId(),
             'parameters' => $this->parameters,
             'value' => $this->value,
         ];
@@ -169,14 +175,14 @@ abstract class FormatChunk implements Arrayable
      */
     public static function fromArray(array $data): FormatChunk
     {
-        $chunkId = $data['chunkId'];
+        $id = $data['id'];
         $parameters = $data['parameters'];
         $value = $data['value'];
 
-        $chunkType = UserCustomId::getChunkType($chunkId);
+        $chunkType = UserCustomId::getChunkType($id);
 
         if (! $chunkType) {
-            throw new \Exception("The chunk type '{$chunkId}' is not registered.");
+            throw new \Exception("The chunk type '{$id}' is not registered.");
         }
 
         /** @var FormatChunk */
