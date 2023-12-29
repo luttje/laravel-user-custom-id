@@ -94,6 +94,7 @@ class UserCustomIdManager
                 if (in_array(HasUserCustomId::class, class_implements($targetOrClass))) {
                     // The trait will save in the eloquent created event.
                     $shouldUpdateLatest = false;
+                    /** @var HasUserCustomId $targetOrClass */
                     $targetOrClass->queueCustomIdUpdate($customId, $chunks);
                 }
             }
@@ -125,7 +126,7 @@ class UserCustomIdManager
     /**
      * Generates a whole new custom id based on the given format.
      *
-     * @param FormatChunk[]
+     * @param FormatChunk[] $chunks
      */
     public function convertToString(array $chunks): string
     {

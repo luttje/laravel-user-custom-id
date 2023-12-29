@@ -143,7 +143,13 @@ abstract class FormatChunk implements Arrayable
      */
     public function __toString(): string
     {
-        return '{'.static::getChunkId().':'.implode(':', $this->parameters).'}';
+        $parameters = [];
+
+        foreach ($this->parameters as $parameter) {
+            $parameters[] = $parameter->getName();
+        }
+
+        return '{'.static::getChunkId().':'.implode(':', $parameters).'}';
     }
 
     /**

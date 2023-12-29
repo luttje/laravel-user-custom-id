@@ -2,6 +2,7 @@
 
 namespace Luttje\UserCustomId\Contracts;
 
+use Luttje\UserCustomId\FormatChunks\FormatChunk;
 use Luttje\UserCustomId\UserCustomId;
 
 interface HasUserCustomId
