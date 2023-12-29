@@ -51,17 +51,10 @@ jobs:
       - name: List Installed Dependencies
         run: composer show -D
 
-      - name: Setup dusk/chrome
-        run: vendor/bin/dusk-updater detect --no-interaction
-
-      - name: Execute tests (with retry)
-        uses: nick-fields/retry@v2.9.0
+      - name: Execute tests
+        run: composer test-ci
         env:
           RUNNING_IN_CI: true
-        with:
-          timeout_minutes: 4
-          max_attempts: 3
-          command: composer test-ci
 
       - name: Send coverage to Coveralls
         uses: coverallsapp/github-action@v2
