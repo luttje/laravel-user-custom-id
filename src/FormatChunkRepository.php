@@ -3,6 +3,7 @@
 namespace Luttje\UserCustomId;
 
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
+use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 
 class FormatChunkRepository
 {
@@ -61,9 +62,9 @@ class FormatChunkRepository
      * that is how it's saved in the database)
      *
      * @param  string  $chunkString The chunk string to parse (e.g: {increment:5:00000})
-     * @param  FormatChunk[]  $lastValueChunks The last value that was generated for this format.
+     * @param  FormatChunkCollection  $lastValueChunks The last value that was generated for this format.
      */
-    public function getChunk(string $chunkString, ?array $lastValueChunks = null): ?FormatChunk
+    public function getChunk(string $chunkString, ?FormatChunkCollection $lastValueChunks = null): ?FormatChunk
     {
         $chunkString = trim($chunkString, '{}');
         $parts = explode(':', $chunkString);

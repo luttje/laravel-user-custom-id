@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Luttje\UserCustomId\Facades\UserCustomId;
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
+use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 use Luttje\UserCustomId\FormatChunks\Literal;
 use Luttje\UserCustomId\Tests\Fixtures\Models\Category;
 use Luttje\UserCustomId\Tests\Fixtures\Models\Product;
@@ -19,7 +20,7 @@ final class UserCustomIdTest extends TestCase
         Model|string $targetOrClass,
         string $format,
         ?string $targetAttribute = null,
-        ?array $lastValueChunks = null,
+        ?FormatChunkCollection $lastValueChunks = null,
     ) {
         return UserCustomId::create($targetOrClass, $owner, $format, $targetAttribute, $lastValueChunks);
     }
@@ -28,7 +29,7 @@ final class UserCustomIdTest extends TestCase
         Model|string $targetOrClass,
         string $format,
         ?string $targetAttribute = null,
-        ?array $lastValueChunks = null,
+        ?FormatChunkCollection $lastValueChunks = null,
     ) {
         $owner = UserFactory::new()->create();
         $this->createCustomId($owner, $targetOrClass, $format, $targetAttribute, $lastValueChunks);
@@ -58,12 +59,12 @@ final class UserCustomIdTest extends TestCase
     public function testGenerateSimpleIncrement()
     {
         $format = 'prefix-{increment}SUFFIX';
-        $lastValueChunks = [
+        $lastValueChunks = new FormatChunkCollection([
             //'prefix-123455SUFFIX';
             $this->makeLiteral('prefix-'),
             $this->makeChunk('increment', 123455),
             $this->makeLiteral('SUFFIX'),
-        ];
+        ]);
         $expected = 'prefix-123456SUFFIX';
 
         $chunks = UserCustomId::generate($format, $lastValueChunks);
@@ -128,11 +129,11 @@ final class UserCustomIdTest extends TestCase
     public function testGenerateForClassInstanceWithLastValueChunks()
     {
         $format = 'prefix-{increment}SUFFIX';
-        $lastValueChunks = [
+        $lastValueChunks = new FormatChunkCollection([
             $this->makeLiteral('prefix-'),
             $this->makeChunk('increment', 123455),
             $this->makeLiteral('SUFFIX'),
-        ];
+        ]);
         $expected = 'prefix-123456SUFFIX';
 
         $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id', $lastValueChunks);

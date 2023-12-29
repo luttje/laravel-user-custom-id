@@ -165,19 +165,6 @@ abstract class FormatChunk implements Arrayable
     }
 
     /**
-     * Serializes many chunks to an array.
-     *
-     * @param  FormatChunk[]  $chunks
-     * @return array<string, mixed>[]
-     */
-    public static function manyToArray(array $chunks): array
-    {
-        return array_map(function (FormatChunk $chunk) {
-            return $chunk->toArray();
-        }, $chunks);
-    }
-
-    /**
      * Deserializes the chunk from an array.
      */
     public static function fromArray(array $data): FormatChunk
@@ -198,18 +185,5 @@ abstract class FormatChunk implements Arrayable
         $chunk->setValue($value);
 
         return $chunk;
-    }
-
-    /**
-     * Deserializes many chunks from an array.
-     *
-     * @param  array<string, mixed>[]  $chunks
-     * @return FormatChunk[]
-     */
-    public static function manyFromArray(array $chunks): array
-    {
-        return array_map(function (array $chunk) {
-            return static::fromArray($chunk);
-        }, $chunks);
     }
 }

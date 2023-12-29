@@ -5,6 +5,7 @@ namespace Luttje\UserCustomId;
 use Illuminate\Database\Eloquent\Model;
 use Luttje\UserCustomId\Contracts\HasUserCustomId;
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
+use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 use Luttje\UserCustomId\FormatChunks\Literal;
 
 class UserCustomIdManager
@@ -21,7 +22,7 @@ class UserCustomIdManager
         return $this->formatChunkRepository->getChunkType($chunkId);
     }
 
-    public function create(Model|string $targetOrClass, Model $owner, string $format, string $targetAttribute, ?array $lastValueChunks = null)
+    public function create(Model|string $targetOrClass, Model $owner, string $format, string $targetAttribute, ?FormatChunkCollection $lastValueChunks = null)
     {
         $targetClass = $targetOrClass instanceof Model
             ? $targetOrClass->getMorphClass()
@@ -114,9 +115,9 @@ class UserCustomIdManager
     /**
      * Generates a whole new custom id based on the given format.
      *
-     * @return FormatChunk[]
+     * @return FormatChunkCollection
      */
-    public function generate(string $format, ?array $lastValueChunks = null): array
+    public function generate(string $format, ?FormatChunkCollection $lastValueChunks = null): FormatChunkCollection
     {
         $chunks = $this->parseFormat($format, $lastValueChunks);
 
@@ -126,9 +127,9 @@ class UserCustomIdManager
     /**
      * Generates a whole new custom id based on the given format.
      *
-     * @param FormatChunk[] $chunks
+     * @param FormatChunkCollection $chunks
      */
-    public function convertToString(array $chunks): string
+    public function convertToString(FormatChunkCollection $chunks): string
     {
         $generated = '';
 
@@ -140,17 +141,15 @@ class UserCustomIdManager
     }
 
     /**
-     * Parses the given format string and returns an array of chunks.
+     * Parses the given format string and returns an collection of chunks.
      * Chunks are identified by the curly braces. If the curly braces
      * are prefixed with a backslash, they will be treated as a literal
      * curly brace and not as a chunk.
      *
      * For literal texts a Literal chunk will be used, for other chunks
      * the appropriate chunk type will be used from FormatChunkRepository.
-     *
-     * @return FormatChunk[]
      */
-    public function parseFormat(string $format, ?array $lastValueChunks = null): array
+    public function parseFormat(string $format, FormatChunkCollection $lastValueChunks = null): FormatChunkCollection
     {
         $chunks = [];
 
@@ -208,6 +207,6 @@ class UserCustomIdManager
             $chunks[] = $literal;
         }
 
-        return $chunks;
+        return new FormatChunkCollection($chunks);
     }
 }

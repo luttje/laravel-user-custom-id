@@ -2,7 +2,7 @@
 
 namespace Luttje\UserCustomId\Contracts;
 
-use Luttje\UserCustomId\FormatChunks\FormatChunk;
+use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 use Luttje\UserCustomId\UserCustomId;
 
 interface HasUserCustomId
@@ -11,8 +11,6 @@ interface HasUserCustomId
 
     /**
      * Queue an update for the custom id.
-     *
-     * @param  FormatChunk[]  $chunks
      */
-    public function queueCustomIdUpdate(UserCustomId $customId, array $chunks): void;
+    public function queueCustomIdUpdate(UserCustomId $customId, FormatChunkCollection $chunks): void;
 }

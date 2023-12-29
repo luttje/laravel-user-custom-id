@@ -4,6 +4,7 @@ namespace Luttje\UserCustomId\Traits;
 
 use Illuminate\Support\Facades\DB;
 use Luttje\UserCustomId\Facades\UserCustomId;
+use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 use Luttje\UserCustomId\UserCustomId as UserCustomIdModel;
 
 /**
@@ -12,6 +13,9 @@ use Luttje\UserCustomId\UserCustomId as UserCustomIdModel;
  */
 trait WithUserCustomId
 {
+    /**
+     * @var array<array{custom_id: UserCustomIdModel, chunks: FormatChunkCollection}>
+     */
     protected array $queued_custom_id_updates = [];
 
     public static function bootWithUserCustomId(): void
@@ -42,7 +46,7 @@ trait WithUserCustomId
         });
     }
 
-    public function queueCustomIdUpdate(UserCustomIdModel $customId, array $chunks): void
+    public function queueCustomIdUpdate(UserCustomIdModel $customId, FormatChunkCollection $chunks): void
     {
         $this->queued_custom_id_updates[] = [
             'custom_id' => $customId,
