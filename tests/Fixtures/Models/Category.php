@@ -12,11 +12,6 @@ class Category extends Model implements HasUserCustomId
     use HasUuids;
     use WithUserCustomId;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'slug',
@@ -24,26 +19,20 @@ class Category extends Model implements HasUserCustomId
         'owner_id',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'id',
     ];
 
     /**
      * The owner of this category.
+     *
+     * This is called by the default getOwner() method in the HasUserCustomId trait.
      */
     public function owner()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * The products in this category.
-     */
     public function products()
     {
         return $this->hasMany(Product::class);

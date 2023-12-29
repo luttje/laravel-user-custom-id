@@ -15,7 +15,7 @@ class Random extends FormatChunk
     {
         return [
             new FormatChunkParameter('length', 'integer', 10),
-            new FormatChunkParameter('characters', 'string', 'A-Za-z0-9'),
+            new FormatChunkParameter('characters', 'string', 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'),
         ];
     }
 

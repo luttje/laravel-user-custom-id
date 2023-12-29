@@ -26,12 +26,8 @@ class UserCustomIdManager
         $this->formatChunkRepository->registerChunkType($chunkType);
     }
 
-    public function create(Model|string $targetOrClass, Model $owner, string $format, string $targetAttribute, ?FormatChunkCollection $lastValueChunks = null)
+    public function createFormat(string $targetClass, Model $owner, string $format, string $targetAttribute, ?FormatChunkCollection $lastValueChunks = null): UserCustomId
     {
-        $targetClass = $targetOrClass instanceof Model
-            ? $targetOrClass->getMorphClass()
-            : $targetOrClass;
-
         $customId = UserCustomId::create([
             'target_type' => $targetClass,
             'owner_id' => $owner->getKey(),

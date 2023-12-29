@@ -13,4 +13,9 @@ interface HasUserCustomId
      * Queue an update for the custom id.
      */
     public function queueCustomIdUpdate(UserCustomId $customId, FormatChunkCollection $chunks): void;
+
+    /**
+     * The owner of this model.
+     */
+    public function getOwner(): mixed;
 }

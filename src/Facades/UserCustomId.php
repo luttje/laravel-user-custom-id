@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static \Luttje\UserCustomId\UserCustomId createFormat(string $targetClass, Model $owner, string $format, string $targetAttribute, ?FormatChunkCollection $lastValueChunks = null)
  * @method static ?UserCustomId get(Model $target, Model $owner) Get the custom id for the given target.
  * @method static string getId(Model $target, Model $owner) Get the custom id for the given target.
  * @method static string getFormat(Model|string $targetOrClass, Model $owner) Get the custom id format for the given target.

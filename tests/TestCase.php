@@ -68,7 +68,11 @@ class TestCase extends Orchestra
         ?string $targetAttribute = null,
         ?FormatChunkCollection $lastValueChunks = null,
     ) {
-        return UserCustomId::create($targetOrClass, $owner, $format, $targetAttribute, $lastValueChunks);
+        $targetClass = $targetOrClass instanceof Model
+            ? $targetOrClass->getMorphClass()
+            : $targetOrClass;
+
+        return UserCustomId::createFormat($targetClass, $owner, $format, $targetAttribute, $lastValueChunks);
     }
 
     protected function createOwnerWithCustomId(
