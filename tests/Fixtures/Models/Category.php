@@ -23,11 +23,6 @@ class Category extends Model implements HasUserCustomId
         'id',
     ];
 
-    /**
-     * The owner of this category.
-     *
-     * This is called by the default getOwner() method in the HasUserCustomId trait.
-     */
     public function owner()
     {
         return $this->belongsTo(User::class);

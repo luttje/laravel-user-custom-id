@@ -22,24 +22,19 @@ final class ReadmeExamplesTest extends TestCase
         );
     }
 
-    public static function exampleGenerateIdInFormat()
+    public static function exampleGenerateIdInFormat(?Product &$product)
     {
         $user = auth()->user(); // Logged in as 'Jane'
 
         $product = new Product([
-            'name' => 'Test Product',
-            'slug' => 'test-product',
-            'description' => 'Test Description',
+            'name' => 'Jacket',
+            'slug' => 'jacket',
+            'description' => 'Hand crafted jacket, by me (Jane).',
         ]);
 
         UserCustomId::generateFor($product, $user);
 
         $product->save();
-
-        // The custom_id attribute is now set to something like:
-        // 'product-Jane-FXALW-1'
-
-        return $product;
     }
 
     public function testExampleBasics(): void
@@ -52,7 +47,7 @@ final class ReadmeExamplesTest extends TestCase
 
         $this->exampleCreateFormat();
 
-        $product = self::exampleGenerateIdInFormat();
+        self::exampleGenerateIdInFormat($product);
 
         $this->assertStringStartsWith('product-Jane-', $product->custom_id);
         $this->assertStringEndsWith('-1', $product->custom_id);
@@ -77,9 +72,9 @@ final class ReadmeExamplesTest extends TestCase
         // echo $user->categories()->count(); // 122
 
         $category = Category::create([
-            'name' => 'Test Category',
-            'slug' => 'test-category',
-            'description' => 'Test Description',
+            'name' => 'Clothes',
+            'slug' => 'clothes-category',
+            'description' => 'General clothes and wearables.',
             'owner_id' => $user->id,
         ]);
 
