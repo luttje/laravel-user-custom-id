@@ -29,7 +29,7 @@ class TargetAttribute extends FormatChunk
             return '***';
         }
 
-        $value = $target->{$attribute};
+        $value = data_get($target, $attribute);
 
         $start = (int) $this->getParameterValue('start');
         $length = (int) $this->getParameterValue('length');

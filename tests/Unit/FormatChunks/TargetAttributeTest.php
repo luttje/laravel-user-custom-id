@@ -5,6 +5,7 @@ namespace Luttje\UserCustomId\Tests\Unit\FormatChunks;
 use Luttje\UserCustomId\Facades\UserCustomId;
 use Luttje\UserCustomId\Tests\Fixtures\MockRandomChunk;
 use Luttje\UserCustomId\Tests\Fixtures\Models\Category;
+use Luttje\UserCustomId\Tests\Fixtures\Models\Product;
 use Orchestra\Testbench\Factories\UserFactory;
 
 // <?php
@@ -148,5 +149,56 @@ final class TargetAttributeTest extends FormatChunkTestCase
         $category->setHidden(['name']);
 
         $this->assertEquals('***', $chunk->getNextValue($category, $owner));
+    }
+
+    public function testTargetAttributeInRelationship()
+    {
+        $chunk = $this->getChunk('attribute', [
+            'owner.name',
+        ]);
+
+        $owner = UserFactory::new()->create([
+            'name' => 'Test User',
+        ]);
+        $category = new Category([
+            'name' => 'Test Category',
+            'owner_id' => $owner->id,
+        ]);
+
+        $this->assertEquals('Test User', $chunk->getNextValue($category, $owner));
+    }
+
+    // Currently fails
+    public function testTargetAttributeCannotAccessHiddenInRelationship()
+    {
+        $chunk = $this->getChunk('attribute', [
+            'category.name',
+        ]);
+
+        $owner = UserFactory::new()->create([
+            'name' => 'Test User',
+        ]);
+        $category = new Category([
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+            'owner_id' => $owner->id,
+        ]);
+        $category->save();
+
+        $product = new Product([
+            'name' => 'Test Product',
+            'slug' => 'test-product',
+            'description' => 'Test Description',
+            'custom_id' => 'test-product',
+            'category_id' => $category->id,
+        ]);
+
+        $product->save();
+
+        $product->refresh();
+
+        $category->setHidden(['name']);
+
+        $this->assertEquals('***', $chunk->getNextValue($product, $owner));
     }
 }
