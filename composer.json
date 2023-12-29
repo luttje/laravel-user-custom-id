@@ -25,7 +25,7 @@
         "laravel/pint": "^1.0",
         "luttje/php-example-tester": "^0.2.1",
         "nunomaduro/collision": "^7.9",
-        "orchestra/testbench": ">=8.18.0 <8.19.0",
+        "orchestra/testbench": "^8.19.0",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
