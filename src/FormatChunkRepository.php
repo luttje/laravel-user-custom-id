@@ -2,6 +2,7 @@
 
 namespace Luttje\UserCustomId;
 
+use Illuminate\Support\Facades\File;
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
 use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 
@@ -9,12 +10,31 @@ class FormatChunkRepository
 {
     protected $registeredChunkTypes = [];
 
+    /**
+     * Goes through all the files in the FormatChunks directory
+     * and registers all the chunk types.
+     */
     public function registerDefaultChunkTypes()
     {
-        $this->registerChunkType(FormatChunks\Increment::class);
-        $this->registerChunkType(FormatChunks\Literal::class);
-        $this->registerChunkType(FormatChunks\Random::class);
-        $this->registerChunkType(FormatChunks\TargetAttribute::class);
+        $files = File::allFiles(__DIR__.'/FormatChunks');
+
+        foreach ($files as $file) {
+            $class = 'Luttje\\UserCustomId\\'.str_replace(
+                ['/', '.php'],
+                ['\\', ''],
+                trim(substr($file, strlen(__DIR__)), '/\\')
+            );
+
+            if (! is_subclass_of($class, FormatChunk::class)) {
+                continue;
+            }
+
+            if ((new \ReflectionClass($class))->isAbstract()) {
+                continue;
+            }
+
+            $this->registerChunkType($class);
+        }
     }
 
     /**

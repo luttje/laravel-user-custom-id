@@ -4,7 +4,6 @@ namespace Luttje\UserCustomId\Facades;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
-use Luttje\UserCustomId\FormatChunks\FormatChunk;
 
 /**
  * @method static ?UserCustomId get(Model $target, Model $owner) Get the custom id for the given target.

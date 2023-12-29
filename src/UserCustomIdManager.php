@@ -4,7 +4,6 @@ namespace Luttje\UserCustomId;
 
 use Illuminate\Database\Eloquent\Model;
 use Luttje\UserCustomId\Contracts\HasUserCustomId;
-use Luttje\UserCustomId\FormatChunks\FormatChunk;
 use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 use Luttje\UserCustomId\FormatChunks\Literal;
 
@@ -119,8 +118,6 @@ class UserCustomIdManager
      *
      * The target and owner models are passed to the chunk types so they
      * can use the values of the models to generate the next value.
-     *
-     * @param FormatChunkCollection $chunks
      */
     public function generateNextCustomId(FormatChunkCollection $chunks, Model $target, Model $owner): string
     {

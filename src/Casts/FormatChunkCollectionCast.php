@@ -13,7 +13,6 @@ class FormatChunkCollectionCast implements CastsAttributes
      * Cast the given value.
      *
      * @param  array<string, mixed>  $attributes
-     * @return FormatChunkCollection|null
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): ?FormatChunkCollection
     {
@@ -33,7 +32,7 @@ class FormatChunkCollectionCast implements CastsAttributes
     /**
      * Prepare the given value for storage.
      *
-     * @param FormatChunkCollection|null $value
+     * @param  FormatChunkCollection|null  $value
      * @param  array<string, mixed>  $attributes
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): ?string

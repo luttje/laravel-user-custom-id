@@ -1,18 +1,19 @@
 <?php
 
-namespace Luttje\UserCustomId\FormatChunks;
+namespace Luttje\UserCustomId\FormatChunks\Time;
 
 use Illuminate\Database\Eloquent\Model;
+use Luttje\UserCustomId\FormatChunks\FormatChunk;
 
-class TargetAttribute extends Attribute
+class Minute extends FormatChunk
 {
     public static function getChunkId(): string
     {
-        return 'attribute';
+        return 'minute';
     }
 
     public function getNextValue(Model $target, Model $owner): mixed
     {
-        return $this->getAttributeValue($target);
+        return now()->minute;
     }
 }

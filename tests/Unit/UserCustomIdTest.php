@@ -10,8 +10,8 @@ use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 use Luttje\UserCustomId\FormatChunks\Literal;
 use Luttje\UserCustomId\Tests\Fixtures\Models\Category;
 use Luttje\UserCustomId\Tests\Fixtures\Models\Product;
+use Luttje\UserCustomId\Tests\Fixtures\Models\User;
 use Luttje\UserCustomId\Tests\TestCase;
-use Orchestra\Testbench\Factories\UserFactory;
 
 final class UserCustomIdTest extends TestCase
 {
@@ -31,7 +31,7 @@ final class UserCustomIdTest extends TestCase
         ?string $targetAttribute = null,
         ?FormatChunkCollection $lastValueChunks = null,
     ) {
-        $owner = UserFactory::new()->create();
+        $owner = User::factory()->create();
         $this->createCustomId($owner, $targetOrClass, $format, $targetAttribute, $lastValueChunks);
 
         return $owner;

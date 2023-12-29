@@ -20,6 +20,6 @@ class Increment extends FormatChunk
 
     public function getNextValue(Model $target, Model $owner): mixed
     {
-        return (string) ((double) $this->value + (double) $this->getParameterValue('amount'));
+        return (string) ((float) $this->value + (float) $this->getParameterValue('amount'));
     }
 }

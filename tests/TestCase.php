@@ -3,6 +3,7 @@
 namespace Luttje\UserCustomId\Tests;
 
 use Luttje\UserCustomId\UserCustomIdServiceProvider;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -10,6 +11,10 @@ class TestCase extends Orchestra
     protected function setUp(): void
     {
         parent::setUp();
+
+        Factory::guessFactoryNamesUsing(
+            fn (string $modelName) => 'Luttje\\UserCustomId\\Tests\\Fixtures\\Database\\Factories\\' . class_basename($modelName) . 'Factory',
+        );
     }
 
     protected function getPackageProviders($app)
@@ -38,13 +43,13 @@ class TestCase extends Orchestra
 
         $this->loadMigrationsFrom([
             '--database' => 'testing',
-            '--path' => realpath(__DIR__.'/../database/migrations'),
+            '--path' => realpath(__DIR__.'/../Database/migrations'),
         ]);
 
         // Test only migrations
         $this->loadMigrationsFrom([
             '--database' => 'testing',
-            '--path' => realpath(__DIR__.'/Fixtures/database/migrations'),
+            '--path' => realpath(__DIR__.'/Fixtures/Database/migrations'),
         ]);
 
         $this->artisan('migrate', ['--database' => 'testing'])

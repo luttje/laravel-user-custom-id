@@ -7,6 +7,7 @@ use Luttje\UserCustomId\FormatChunks\Random;
 final class MockRandomChunk extends Random
 {
     public static array $sequence = [];
+
     public static int $sequenceIndex = 0;
 
     public function getRandomNumber(int $min, int $max): int
