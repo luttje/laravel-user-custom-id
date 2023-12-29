@@ -38,7 +38,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Luttje\\UserCustomId\\Tests\\": "tests/"
+            "Luttje\\UserCustomId\\Tests\\": "tests/",
+            "Luttje\\UserCustomId\\Tests\\Fixtures\\Database\\Factories\\": "tests/Fixtures/Database/Factories/"
         }
     },
     "scripts": {
