@@ -3,13 +3,13 @@
 namespace Luttje\UserCustomId\Tests\Unit\FormatChunks;
 
 use DateTimeInterface;
-use Ramsey\Uuid\UuidInterface;
 use Ramsey\Uuid\Type\Hexadecimal;
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidFactoryInterface;
-use Ramsey\Uuid\Validator\ValidatorInterface;
 use Ramsey\Uuid\Type\Integer as IntegerObject;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidFactory;
+use Ramsey\Uuid\UuidFactoryInterface;
+use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Validator\ValidatorInterface;
 
 final class UuidTest extends FormatChunkTestCase
 {
@@ -17,8 +17,10 @@ final class UuidTest extends FormatChunkTestCase
     {
         $realFactory = new UuidFactory();
 
-        Uuid::setFactory(new class ($realFactory, $expected) implements UuidFactoryInterface {
+        Uuid::setFactory(new class($realFactory, $expected) implements UuidFactoryInterface
+        {
             private $realFactory;
+
             private $expected;
 
             public function __construct(UuidFactoryInterface $realFactory, string $expected)
@@ -58,7 +60,8 @@ final class UuidTest extends FormatChunkTestCase
 
             public function getValidator(): ValidatorInterface
             {
-                return new class implements ValidatorInterface {
+                return new class implements ValidatorInterface
+                {
                     public function getPattern(): string
                     {
                         return '/^[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$/i';

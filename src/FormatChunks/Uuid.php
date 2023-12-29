@@ -24,13 +24,13 @@ class Uuid extends FormatChunk
         $validVersions = [1, 4];
         $version = (int) $this->getParameterValue('version');
 
-        if (!in_array($version, $validVersions)) {
+        if (! in_array($version, $validVersions)) {
             $version = 4;
         }
 
         return match ($version) {
             1 => UuidGenerator::uuid1()->toString(),
-            4 => UuidGenerator::uuid4()->toString(),
+            default => UuidGenerator::uuid4()->toString(),
         };
     }
 }

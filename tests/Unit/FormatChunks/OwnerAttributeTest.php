@@ -3,7 +3,6 @@
 namespace Luttje\UserCustomId\Tests\Unit\FormatChunks;
 
 use Luttje\UserCustomId\Tests\Fixtures\Models\Category;
-use Luttje\UserCustomId\Tests\Fixtures\Models\Product;
 use Luttje\UserCustomId\Tests\Fixtures\Models\User;
 
 final class OwnerAttributeTest extends FormatChunkTestCase

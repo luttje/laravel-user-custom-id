@@ -2,49 +2,16 @@
 
 namespace Luttje\UserCustomId\Tests\Unit;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Luttje\UserCustomId\Facades\UserCustomId;
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
 use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
-use Luttje\UserCustomId\FormatChunks\Literal;
 use Luttje\UserCustomId\Tests\Fixtures\Models\Category;
 use Luttje\UserCustomId\Tests\Fixtures\Models\Product;
-use Luttje\UserCustomId\Tests\Fixtures\Models\User;
 use Luttje\UserCustomId\Tests\TestCase;
 
 final class UserCustomIdTest extends TestCase
 {
-    private function createCustomId(
-        Model $owner,
-        Model|string $targetOrClass,
-        string $format,
-        ?string $targetAttribute = null,
-        ?FormatChunkCollection $lastValueChunks = null,
-    ) {
-        return UserCustomId::create($targetOrClass, $owner, $format, $targetAttribute, $lastValueChunks);
-    }
-
-    private function createOwnerWithCustomId(
-        Model|string $targetOrClass,
-        string $format,
-        ?string $targetAttribute = null,
-        ?FormatChunkCollection $lastValueChunks = null,
-    ) {
-        $owner = User::factory()->create();
-        $this->createCustomId($owner, $targetOrClass, $format, $targetAttribute, $lastValueChunks);
-
-        return $owner;
-    }
-
-    private function makeLiteral(string $value)
-    {
-        $literal = new Literal();
-        $literal->setValue($value);
-
-        return $literal;
-    }
-
     private function makeChunk(string $id, mixed $value)
     {
         $chunkType = UserCustomId::getChunkType($id);

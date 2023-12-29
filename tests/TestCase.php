@@ -2,8 +2,13 @@
 
 namespace Luttje\UserCustomId\Tests;
 
-use Luttje\UserCustomId\UserCustomIdServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
+use Luttje\UserCustomId\Facades\UserCustomId;
+use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
+use Luttje\UserCustomId\FormatChunks\Literal;
+use Luttje\UserCustomId\Tests\Fixtures\Models\User;
+use Luttje\UserCustomId\UserCustomIdServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -13,7 +18,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Luttje\\UserCustomId\\Tests\\Fixtures\\Database\\Factories\\' . class_basename($modelName) . 'Factory',
+            fn (string $modelName) => 'Luttje\\UserCustomId\\Tests\\Fixtures\\Database\\Factories\\'.class_basename($modelName).'Factory',
         );
     }
 
@@ -54,5 +59,35 @@ class TestCase extends Orchestra
 
         $this->artisan('migrate', ['--database' => 'testing'])
             ->run();
+    }
+
+    protected function createCustomId(
+        Model $owner,
+        Model|string $targetOrClass,
+        string $format,
+        ?string $targetAttribute = null,
+        ?FormatChunkCollection $lastValueChunks = null,
+    ) {
+        return UserCustomId::create($targetOrClass, $owner, $format, $targetAttribute, $lastValueChunks);
+    }
+
+    protected function createOwnerWithCustomId(
+        Model|string $targetOrClass,
+        string $format,
+        ?string $targetAttribute = null,
+        ?FormatChunkCollection $lastValueChunks = null,
+    ) {
+        $owner = User::factory()->create();
+        $this->createCustomId($owner, $targetOrClass, $format, $targetAttribute, $lastValueChunks);
+
+        return $owner;
+    }
+
+    protected function makeLiteral(string $value)
+    {
+        $literal = new Literal();
+        $literal->setValue($value);
+
+        return $literal;
     }
 }

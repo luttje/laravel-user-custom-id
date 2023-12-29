@@ -28,7 +28,7 @@ class Month extends FormatChunk
         ];
         $format = (string) $this->getParameterValue('format');
 
-        if (!in_array($format, $validMonthFormats)) {
+        if (! in_array($format, $validMonthFormats)) {
             $format = 'n';
         }
 

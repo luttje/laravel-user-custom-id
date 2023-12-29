@@ -37,7 +37,7 @@ abstract class Attribute extends FormatChunk
     {
         $attribute = $this->getParameterValue('attribute');
 
-        if (!self::isAllowed($target, $attribute)) {
+        if (! self::isAllowed($target, $attribute)) {
             return '***';
         }
 

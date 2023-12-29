@@ -35,6 +35,15 @@ abstract class FormatChunk implements Arrayable
                 throw new \Exception("The parameter '{$name}' is required for chunk type '".static::getChunkId()."'.");
             }
 
+            // Try cast the value to the specified type
+            $value = match ($type) {
+                'integer' => (int) $value,
+                'numeric' => (float) $value,
+                'string' => (string) $value,
+                'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
+                default => $value,
+            };
+
             if ($type === 'numeric') {
                 if (! is_numeric($value)) {
                     throw new \Exception("The parameter '{$name}' must be numeric, '{$value}' given.");
