@@ -2,6 +2,8 @@
 
 namespace Luttje\UserCustomId\FormatChunks;
 
+use Illuminate\Database\Eloquent\Model;
+
 class Literal extends FormatChunk
 {
     public static function getChunkId(): string
@@ -9,7 +11,7 @@ class Literal extends FormatChunk
         return 'literal';
     }
 
-    public function getNextValue(): string
+    public function getNextValue(Model $target, Model $owner): mixed
     {
         return $this->value;
     }

@@ -3,6 +3,7 @@
 namespace Luttje\UserCustomId\FormatChunks;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Model;
 use Luttje\UserCustomId\Facades\UserCustomId;
 
 abstract class FormatChunk implements Arrayable
@@ -124,8 +125,24 @@ abstract class FormatChunk implements Arrayable
      * Returns the next value for this chunk. For example, if we want this
      * chunk to always increment by 1, this method should return the current
      * value + 1.
+     *
+     * The target and owner models are passed to the chunk types so they
+     * can use the values of the models to generate the next value.
      */
-    abstract public function getNextValue(): mixed;
+    abstract public function getNextValue(Model $target, Model $owner): mixed;
+
+    /**
+     * Generates the next value for this chunk and sets it as the current value
+     * so it's ready to be saved in the database.
+     */
+    public function generateNextValue(Model $target, Model $owner): mixed
+    {
+        $nextValue = $this->getNextValue($target, $owner);
+
+        $this->setValue($nextValue);
+
+        return $nextValue;
+    }
 
     /**
      * Sets the specified parameter for this chunk.

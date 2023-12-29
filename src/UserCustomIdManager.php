@@ -84,25 +84,22 @@ class UserCustomIdManager
     /**
      * Generates a whole new custom id for the given target.
      */
-    public function generateFor(Model|string $targetOrClass, Model $owner): ?string
+    public function generateFor(Model $target, Model $owner): ?string
     {
-        $customId = $this->get($targetOrClass, $owner);
+        $customId = $this->get($target, $owner);
 
         if ($customId) {
-            $chunks = $this->generate($customId->format, $customId->last_target_custom_id);
-            $generated = $this->convertToString($chunks);
-            $isModel = $targetOrClass instanceof Model;
+            $chunks = $this->parseCustomId($customId);
+            $nextCustomId = $this->generateNextCustomId($chunks, $target, $owner);
             $shouldUpdateLatest = true;
 
-            if ($isModel) {
-                $targetOrClass->{$customId->target_attribute} = $generated;
+            $target->{$customId->target_attribute} = $nextCustomId;
 
-                if (in_array(HasUserCustomId::class, class_implements($targetOrClass))) {
-                    // The trait will save in the eloquent created event.
-                    $shouldUpdateLatest = false;
-                    /** @var HasUserCustomId $targetOrClass */
-                    $targetOrClass->queueCustomIdUpdate($customId, $chunks);
-                }
+            if (in_array(HasUserCustomId::class, class_implements($target))) {
+                // The trait will save in the eloquent created event.
+                $shouldUpdateLatest = false;
+                /** @var HasUserCustomId $target */
+                $target->queueCustomIdUpdate($customId, $chunks);
             }
 
             if ($shouldUpdateLatest) {
@@ -111,7 +108,7 @@ class UserCustomIdManager
                 ]);
             }
 
-            return $generated;
+            return $nextCustomId;
         }
 
         return null;
@@ -120,33 +117,24 @@ class UserCustomIdManager
     /**
      * Generates a whole new custom id based on the given format.
      *
-     * @return FormatChunkCollection
-     */
-    public function generate(string $format, ?FormatChunkCollection $lastValueChunks = null): FormatChunkCollection
-    {
-        $chunks = $this->parseFormat($format, $lastValueChunks);
-
-        return $chunks;
-    }
-
-    /**
-     * Generates a whole new custom id based on the given format.
+     * The target and owner models are passed to the chunk types so they
+     * can use the values of the models to generate the next value.
      *
      * @param FormatChunkCollection $chunks
      */
-    public function convertToString(FormatChunkCollection $chunks): string
+    public function generateNextCustomId(FormatChunkCollection $chunks, Model $target, Model $owner): string
     {
         $generated = '';
 
         foreach ($chunks as $chunk) {
-            $generated .= $chunk->getNextValue();
+            $generated .= $chunk->generateNextValue($target, $owner);
         }
 
         return $generated;
     }
 
     /**
-     * Parses the given format string and returns an collection of chunks.
+     * Parses the given custom id and returns an collection of chunks.
      * Chunks are identified by the curly braces. If the curly braces
      * are prefixed with a backslash, they will be treated as a literal
      * curly brace and not as a chunk.
@@ -154,8 +142,10 @@ class UserCustomIdManager
      * For literal texts a Literal chunk will be used, for other chunks
      * the appropriate chunk type will be used from FormatChunkRepository.
      */
-    public function parseFormat(string $format, FormatChunkCollection $lastValueChunks = null): FormatChunkCollection
+    protected function parseCustomId(UserCustomId $customId): FormatChunkCollection
     {
+        $lastValueChunks = $customId->last_target_custom_id;
+        $format = $customId->format;
         $chunks = [];
 
         $currentChunkString = '';

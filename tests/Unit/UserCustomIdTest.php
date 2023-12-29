@@ -67,8 +67,16 @@ final class UserCustomIdTest extends TestCase
         ]);
         $expected = 'prefix-123456SUFFIX';
 
-        $chunks = UserCustomId::generate($format, $lastValueChunks);
-        $result = UserCustomId::convertToString($chunks);
+        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id', $lastValueChunks);
+
+        $category = new Category([
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+            'description' => 'This is a test category.',
+            'owner_id' => $owner->id,
+        ]);
+
+        $result = UserCustomId::generateFor($category, $owner);
 
         $this->assertEquals($expected, $result);
     }
@@ -86,7 +94,14 @@ final class UserCustomIdTest extends TestCase
             'owner_id' => $owner->id,
         ]);
 
-        $result = UserCustomId::generateFor(Category::class, $owner);
+        $category = new Category([
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+            'description' => 'This is a test category.',
+            'owner_id' => $owner->id,
+        ]);
+
+        $result = UserCustomId::generateFor($category, $owner);
 
         $this->assertEquals($expected, $result);
     }
@@ -123,7 +138,7 @@ final class UserCustomIdTest extends TestCase
 
         $this->assertNotNull($lastId);
 
-        $this->assertEquals($expected, UserCustomId::convertToString($lastId));
+        $this->assertEquals($expected, strval($lastId));
     }
 
     public function testGenerateForClassInstanceWithLastValueChunks()
@@ -159,7 +174,7 @@ final class UserCustomIdTest extends TestCase
 
         $this->assertNotNull($lastId);
 
-        $this->assertEquals($expected, UserCustomId::convertToString($lastId));
+        $this->assertEquals($expected, strval($lastId));
     }
 
     public function testGenerateForClassInstanceIntoIdAttribute()
@@ -191,7 +206,7 @@ final class UserCustomIdTest extends TestCase
 
         $this->assertNotNull($lastId);
 
-        $this->assertEquals($expected, UserCustomId::convertToString($lastId));
+        $this->assertEquals($expected, strval($lastId));
 
         $this->assertDatabaseHas('products', [
             'custom_id' => $expected,
@@ -244,7 +259,7 @@ final class UserCustomIdTest extends TestCase
         $lastId = $ownerCustomIdExists->last_target_custom_id;
 
         $this->assertNotNull($lastId);
-        $this->assertEquals($expected, UserCustomId::convertToString($lastId));
+        $this->assertEquals($expected, strval($lastId));
     }
 
     public function testGenerateForClassInstanceInsideRollbackTransaction()
@@ -329,13 +344,16 @@ final class UserCustomIdTest extends TestCase
         $this->assertEmpty($category->products);
 
         // Insert a product with the category id as foreign key.
-        $product = Product::create([
+        $product = new Product([
             'name' => 'Test Product',
             'slug' => 'test-product',
             'description' => 'This is a test product.',
             'category_id' => $category->id,
-            'custom_id' => UserCustomId::generateFor(Product::class, $owner),
         ]);
+
+        UserCustomId::generateFor($product, $owner);
+
+        $product->save();
 
         $category->refresh();
 

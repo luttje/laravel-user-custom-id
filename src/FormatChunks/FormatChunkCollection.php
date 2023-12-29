@@ -10,4 +10,19 @@ use Illuminate\Support\Collection;
  */
 class FormatChunkCollection extends Collection
 {
+    /**
+     * Convert the collection to its string representation.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $string = '';
+
+        foreach ($this->items as $item) {
+            $string .= $item->getValue();
+        }
+
+        return $string;
+    }
 }

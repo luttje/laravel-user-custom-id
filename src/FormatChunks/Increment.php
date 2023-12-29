@@ -2,6 +2,8 @@
 
 namespace Luttje\UserCustomId\FormatChunks;
 
+use Illuminate\Database\Eloquent\Model;
+
 class Increment extends FormatChunk
 {
     public static function getChunkId(): string
@@ -16,7 +18,7 @@ class Increment extends FormatChunk
         ];
     }
 
-    public function getNextValue(): string
+    public function getNextValue(Model $target, Model $owner): mixed
     {
         return (string) ((double) $this->value + (double) $this->getParameterValue('amount'));
     }

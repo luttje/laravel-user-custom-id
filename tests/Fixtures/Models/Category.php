@@ -26,6 +26,15 @@ class Category extends Model implements HasUserCustomId
     ];
 
     /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'id',
+    ];
+
+    /**
      * The owner of this category.
      */
     public function owner()

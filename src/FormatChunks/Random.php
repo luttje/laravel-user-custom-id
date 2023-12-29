@@ -2,6 +2,8 @@
 
 namespace Luttje\UserCustomId\FormatChunks;
 
+use Illuminate\Database\Eloquent\Model;
+
 class Random extends FormatChunk
 {
     public static function getChunkId(): string
@@ -17,7 +19,7 @@ class Random extends FormatChunk
         ];
     }
 
-    public function getNextValue(): string
+    public function getNextValue(Model $target, Model $owner): mixed
     {
         return $this->generateRandom((int) $this->getParameterValue('length'));
     }

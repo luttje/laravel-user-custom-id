@@ -14,6 +14,7 @@ class FormatChunkRepository
         $this->registerChunkType(FormatChunks\Increment::class);
         $this->registerChunkType(FormatChunks\Literal::class);
         $this->registerChunkType(FormatChunks\Random::class);
+        $this->registerChunkType(FormatChunks\TargetAttribute::class);
     }
 
     /**
