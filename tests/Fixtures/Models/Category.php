@@ -19,7 +19,6 @@ class Category extends Model implements HasUserCustomId
      * @var array<int, string>
      */
     protected $fillable = [
-        'custom_id',
         'name',
         'slug',
         'description',
@@ -32,5 +31,13 @@ class Category extends Model implements HasUserCustomId
     public function owner()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * The products in this category.
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class);
     }
 }

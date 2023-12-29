@@ -4,11 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration
+{
     public function up()
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->uuid('id')->primary();
+
+            $table->string('custom_id')->unique();
 
             $table->string('name');
             $table->string('slug')->unique();
@@ -16,7 +19,10 @@ return new class () extends Migration {
             $table->text('description')->nullable();
 
             $table->decimal('price', 15, 2)->default(0);
-            $table->foreignId('category_id')->cascadeOnDelete()->nullable();
+
+            // foreign key to string category id
+            $table->string('category_id')->nullable();
+            $table->foreign('category_id')->references('id')->on('categories');
 
             $table->timestamps();
         });

@@ -2,6 +2,7 @@
 
 namespace Luttje\UserCustomId\Traits;
 
+use Illuminate\Support\Facades\DB;
 use Luttje\UserCustomId\Facades\UserCustomId;
 use Luttje\UserCustomId\UserCustomId as UserCustomIdModel;
 
@@ -16,7 +17,14 @@ trait WithUserCustomId
     public static function bootWithUserCustomId(): void
     {
         static::creating(function ($model) {
-            UserCustomId::generateFor($model, $model->getOwner());
+            $owner = $model->getOwner();
+
+            if (! $owner) {
+                throw new \Exception('Cannot create a custom id for a model without an owner. Did you forget to implement the getOwner() method?');
+            }
+
+            DB::beginTransaction();
+            UserCustomId::generateFor($model, $owner);
         });
 
         static::created(function ($model) {
@@ -29,6 +37,7 @@ trait WithUserCustomId
                 ]);
             }
 
+            DB::commit();
             $model->queued_custom_id_updates = [];
         });
     }

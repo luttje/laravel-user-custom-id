@@ -2,7 +2,6 @@
 
 namespace Luttje\UserCustomId;
 
-use Luttje\UserCustomId\Facades\UserCustomId;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;

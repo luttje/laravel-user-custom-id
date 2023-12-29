@@ -20,7 +20,7 @@ class FormatChunkRepository
      */
     public function registerChunkType(string $chunkType)
     {
-        if (!is_subclass_of($chunkType, FormatChunk::class)) {
+        if (! is_subclass_of($chunkType, FormatChunk::class)) {
             throw new \Exception('The given chunk type must be an instance of FormatChunk.');
         }
 
@@ -60,8 +60,8 @@ class FormatChunkRepository
      * generated for this format. It's already parsed into chunks (because
      * that is how it's saved in the database)
      *
-     * @param string $chunkString The chunk string to parse (e.g: {increment:5:00000})
-     * @param FormatChunk[] $lastValueChunks The last value that was generated for this format.
+     * @param  string  $chunkString The chunk string to parse (e.g: {increment:5:00000})
+     * @param  FormatChunk[]  $lastValueChunks The last value that was generated for this format.
      */
     public function getChunk(string $chunkString, ?array $lastValueChunks = null): ?FormatChunk
     {
@@ -70,7 +70,7 @@ class FormatChunkRepository
         $chunkId = $parts[0];
         $chunkType = $this->getChunkType($chunkId);
 
-        if (!$chunkType) {
+        if (! $chunkType) {
             return null;
         }
 

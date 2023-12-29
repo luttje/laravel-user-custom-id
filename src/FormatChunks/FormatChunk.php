@@ -18,8 +18,7 @@ abstract class FormatChunk implements Arrayable
      */
     public function __construct(
         ...$parameters
-    )
-    {
+    ) {
         $parameterTypes = static::getParameters();
 
         foreach ($parameterTypes as $parameterType) {
@@ -32,7 +31,7 @@ abstract class FormatChunk implements Arrayable
             }
 
             if ($value === null) {
-                throw new \Exception("The parameter '{$name}' is required for chunk type '" . static::getChunkId() . "'.");
+                throw new \Exception("The parameter '{$name}' is required for chunk type '".static::getChunkId()."'.");
             }
 
             $valueType = gettype($value);
@@ -49,7 +48,7 @@ abstract class FormatChunk implements Arrayable
      * Returns the chunk id as it appears in the format string.
      * E.g: 'random' for being used like this: {random}
      */
-    public static abstract function getChunkId(): string;
+    abstract public static function getChunkId(): string;
 
     /**
      * Returns the parameter names and types that are allowed for this chunk.
@@ -120,7 +119,7 @@ abstract class FormatChunk implements Arrayable
      * chunk to always increment by 1, this method should return the current
      * value + 1.
      */
-    public abstract function getNextValue(): mixed;
+    abstract public function getNextValue(): mixed;
 
     /**
      * Sets the specified parameter for this chunk.
@@ -144,7 +143,7 @@ abstract class FormatChunk implements Arrayable
      */
     public function __toString(): string
     {
-        return '{' . static::getChunkId() . ':' . implode(':', $this->parameters) . '}';
+        return '{'.static::getChunkId().':'.implode(':', $this->parameters).'}';
     }
 
     /**
@@ -162,7 +161,7 @@ abstract class FormatChunk implements Arrayable
     /**
      * Serializes many chunks to an array.
      *
-     * @param FormatChunk[] $chunks
+     * @param  FormatChunk[]  $chunks
      * @return array<string, mixed>[]
      */
     public static function manyToArray(array $chunks): array
@@ -183,7 +182,7 @@ abstract class FormatChunk implements Arrayable
 
         $chunkType = UserCustomId::getChunkType($chunkId);
 
-        if (!$chunkType) {
+        if (! $chunkType) {
             throw new \Exception("The chunk type '{$chunkId}' is not registered.");
         }
 
@@ -198,7 +197,7 @@ abstract class FormatChunk implements Arrayable
     /**
      * Deserializes many chunks from an array.
      *
-     * @param array<string, mixed>[] $chunks
+     * @param  array<string, mixed>[]  $chunks
      * @return FormatChunk[]
      */
     public static function manyFromArray(array $chunks): array

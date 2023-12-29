@@ -11,8 +11,7 @@ interface HasUserCustomId
     /**
      * Queue an update for the custom id.
      *
-     * @param UserCustomId $customId
-     * @param FormatChunk[] $chunks
+     * @param  FormatChunk[]  $chunks
      */
     public function queueCustomIdUpdate(UserCustomId $customId, array $chunks): void;
 }

@@ -3,24 +3,35 @@
 namespace Luttje\UserCustomId\Tests\Unit;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Luttje\UserCustomId\Facades\UserCustomId;
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
 use Luttje\UserCustomId\FormatChunks\Literal;
 use Luttje\UserCustomId\Tests\Fixtures\Models\Category;
+use Luttje\UserCustomId\Tests\Fixtures\Models\Product;
 use Luttje\UserCustomId\Tests\TestCase;
 use Orchestra\Testbench\Factories\UserFactory;
 
 final class UserCustomIdTest extends TestCase
 {
+    private function createCustomId(
+        Model $owner,
+        Model|string $targetOrClass,
+        string $format,
+        ?string $targetAttribute = null,
+        ?array $lastValueChunks = null,
+    ) {
+        return UserCustomId::create($targetOrClass, $owner, $format, $targetAttribute, $lastValueChunks);
+    }
+
     private function createOwnerWithCustomId(
         Model|string $targetOrClass,
         string $format,
         ?string $targetAttribute = null,
         ?array $lastValueChunks = null,
-    )
-    {
+    ) {
         $owner = UserFactory::new()->create();
-        UserCustomId::create($targetOrClass, $owner, $format, $targetAttribute, $lastValueChunks);
+        $this->createCustomId($owner, $targetOrClass, $format, $targetAttribute, $lastValueChunks);
 
         return $owner;
     }
@@ -66,11 +77,11 @@ final class UserCustomIdTest extends TestCase
         $format = 'prefix-{increment}SUFFIX';
         $expected = 'prefix-1SUFFIX';
 
-        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'custom_id');
+        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id');
 
         $this->assertDatabaseHas('user_custom_ids', [
             'target_type' => Category::class,
-            'target_attribute' => 'custom_id',
+            'target_attribute' => 'id',
             'owner_id' => $owner->id,
         ]);
 
@@ -84,7 +95,7 @@ final class UserCustomIdTest extends TestCase
         $format = 'prefix-{increment}SUFFIX';
         $expected = 'prefix-1SUFFIX';
 
-        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'custom_id');
+        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id');
 
         $category = new Category([
             'name' => 'Test Category',
@@ -93,11 +104,13 @@ final class UserCustomIdTest extends TestCase
             'owner_id' => $owner->id,
         ]);
 
-        UserCustomId::generateFor($category, $owner);
+        // Not needed for Category, as it implements HasUserCustomId with the WithUserCustomId trait.
+        // That will automatically generate a custom id for the model based on the owning user.
+        // UserCustomId::generateFor($category, $owner);
 
         $category->save();
 
-        $result = $category->custom_id;
+        $result = $category->id;
 
         $this->assertEquals($expected, $result);
 
@@ -110,5 +123,221 @@ final class UserCustomIdTest extends TestCase
         $this->assertNotNull($lastId);
 
         $this->assertEquals($expected, UserCustomId::convertToString($lastId));
+    }
+
+    public function testGenerateForClassInstanceWithLastValueChunks()
+    {
+        $format = 'prefix-{increment}SUFFIX';
+        $lastValueChunks = [
+            $this->makeLiteral('prefix-'),
+            $this->makeChunk('increment', 123455),
+            $this->makeLiteral('SUFFIX'),
+        ];
+        $expected = 'prefix-123456SUFFIX';
+
+        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id', $lastValueChunks);
+
+        $category = new Category([
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+            'description' => 'This is a test category.',
+            'owner_id' => $owner->id,
+        ]);
+
+        $category->save();
+
+        $result = $category->id;
+
+        $this->assertEquals($expected, $result);
+
+        $ownerCustomIdExists = \Luttje\UserCustomId\UserCustomId::latest()->first();
+
+        $this->assertNotNull($ownerCustomIdExists);
+
+        $lastId = $ownerCustomIdExists->last_target_custom_id;
+
+        $this->assertNotNull($lastId);
+
+        $this->assertEquals($expected, UserCustomId::convertToString($lastId));
+    }
+
+    public function testGenerateForClassInstanceIntoIdAttribute()
+    {
+        $format = 'prefix-{increment}SUFFIX';
+        $expected = 'prefix-1SUFFIX';
+
+        $owner = $this->createOwnerWithCustomId(Product::class, $format, 'custom_id');
+
+        $product = new Product([
+            'name' => 'Test Product',
+            'slug' => 'test-product',
+            'description' => 'This is a test product.',
+        ]);
+
+        UserCustomId::generateFor($product, $owner);
+
+        $product->save();
+
+        $result = $product->custom_id;
+
+        $this->assertEquals($expected, $result);
+
+        $ownerCustomIdExists = \Luttje\UserCustomId\UserCustomId::latest()->first();
+
+        $this->assertNotNull($ownerCustomIdExists);
+
+        $lastId = $ownerCustomIdExists->last_target_custom_id;
+
+        $this->assertNotNull($lastId);
+
+        $this->assertEquals($expected, UserCustomId::convertToString($lastId));
+
+        $this->assertDatabaseHas('products', [
+            'custom_id' => $expected,
+        ]);
+    }
+
+    public function testGenerateForClassInstanceFailsWithoutOwner()
+    {
+        $format = 'prefix-{increment}SUFFIX';
+
+        $this->createOwnerWithCustomId(Category::class, $format, 'custom_id');
+
+        $category = new Category([
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+            'description' => 'This is a test category.',
+        ]);
+
+        // Expect an exception to be thrown.
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot create a custom id for a model without an owner. Did you forget to implement the getOwner() method?');
+
+        $category->save();
+    }
+
+    public function testGenerateForClassInstanceInsideTransaction()
+    {
+        $format = 'prefix-{increment}SUFFIX';
+        $expected = 'prefix-1SUFFIX';
+
+        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id');
+
+        $category = new Category([
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+            'description' => 'This is a test category.',
+            'owner_id' => $owner->id,
+        ]);
+
+        DB::beginTransaction();
+        $category->save();
+        DB::commit();
+
+        $this->assertDatabaseHas('categories', [
+            'id' => $expected,
+        ]);
+
+        $ownerCustomIdExists = \Luttje\UserCustomId\UserCustomId::latest()->first();
+
+        $lastId = $ownerCustomIdExists->last_target_custom_id;
+
+        $this->assertNotNull($lastId);
+        $this->assertEquals($expected, UserCustomId::convertToString($lastId));
+    }
+
+    public function testGenerateForClassInstanceInsideRollbackTransaction()
+    {
+        $format = 'prefix-{increment}SUFFIX';
+        $expected = 'prefix-1SUFFIX';
+
+        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id');
+
+        $category = new Category([
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+            'description' => 'This is a test category.',
+            'owner_id' => $owner->id,
+        ]);
+
+        DB::beginTransaction();
+        $category->save();
+        DB::rollBack();
+
+        $this->assertDatabaseMissing('categories', [
+            'id' => $expected,
+        ]);
+
+        $ownerCustomIdExists = \Luttje\UserCustomId\UserCustomId::latest()->first();
+
+        $lastId = $ownerCustomIdExists->last_target_custom_id;
+
+        $this->assertNull($lastId);
+    }
+
+    public function testGenerateForClassInstanceInsideFailingTransaction()
+    {
+        $format = 'prefix-{increment}SUFFIX';
+        $expected = 'prefix-1SUFFIX';
+
+        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id');
+
+        $category = new Category([
+            // 'name' => 'Test Category', // Should fail because of missing name.
+            'slug' => 'test-category',
+            'description' => 'This is a test category.',
+            'owner_id' => $owner->id,
+        ]);
+
+        $this->expectException(\Illuminate\Database\QueryException::class);
+
+        $category->save();
+
+        $this->assertDatabaseMissing('categories', [
+            'custom_id' => $expected,
+        ]);
+
+        $ownerCustomIdExists = \Luttje\UserCustomId\UserCustomId::latest()->first();
+
+        $lastId = $ownerCustomIdExists->last_target_custom_id;
+
+        $this->assertNull($lastId);
+    }
+
+    public function testGenerateForClassInstanceWithForeignId()
+    {
+        $format = 'prefix-{increment}SUFFIX';
+        $expected = 'prefix-1SUFFIX';
+
+        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id');
+        $this->createCustomId($owner, Product::class, $format, 'custom_id');
+
+        $category = new Category([
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+            'description' => 'This is a test category.',
+            'owner_id' => $owner->id,
+        ]);
+
+        $category->save();
+
+        $result = $category->id;
+
+        $this->assertEquals($expected, $result);
+
+        $this->assertEmpty($category->products);
+
+        // Insert a product with the category id as foreign key.
+        $product = Product::create([
+            'name' => 'Test Product',
+            'slug' => 'test-product',
+            'description' => 'This is a test product.',
+            'category_id' => $category->id,
+            'custom_id' => UserCustomId::generateFor(Product::class, $owner),
+        ]);
+
+        $category->refresh();
+
+        $this->assertTrue($category->products->contains($product));
     }
 }

@@ -11,8 +11,7 @@ class UserCustomIdManager
 {
     public function __construct(
         protected ?FormatChunkRepository $formatChunkRepository = null,
-    )
-    {
+    ) {
         $this->formatChunkRepository = $formatChunkRepository ?? new FormatChunkRepository;
         $this->formatChunkRepository->registerDefaultChunkTypes();
     }
@@ -99,7 +98,6 @@ class UserCustomIdManager
                 }
             }
 
-            // TODO: somehow make sure this happens in a transaction with the save
             if ($shouldUpdateLatest) {
                 $customId->update([
                     'last_target_custom_id' => $chunks,
@@ -164,10 +162,11 @@ class UserCustomIdManager
 
             if ($char === '\\') {
                 $isEscaped = true;
+
                 continue;
             }
 
-            if ($char === '{' && !$isEscaped) {
+            if ($char === '{' && ! $isEscaped) {
                 if ($currentChunkString) {
                     $literal = new Literal();
                     $literal->setValue($currentChunkString);
@@ -177,21 +176,23 @@ class UserCustomIdManager
                 }
 
                 $currentChunkString .= $char;
+
                 continue;
             }
 
-            if ($char === '}' && !$isEscaped) {
+            if ($char === '}' && ! $isEscaped) {
                 $currentChunkString .= $char;
 
                 $chunk = $this->formatChunkRepository->getChunk($currentChunkString, $lastValueChunks);
 
-                if (!$chunk) {
+                if (! $chunk) {
                     throw new \Exception("The chunk '{$currentChunkString}' is not registered.");
                 }
 
                 $chunks[] = $chunk;
 
                 $currentChunkString = '';
+
                 continue;
             }
 

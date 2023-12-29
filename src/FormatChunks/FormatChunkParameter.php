@@ -8,8 +8,8 @@ class FormatChunkParameter
         protected string $name,
         protected string $type,
         protected mixed $defaultValue = null,
-    )
-    { }
+    ) {
+    }
 
     public function getName(): string
     {
