@@ -11,7 +11,7 @@ class Increment extends FormatChunk
         return 'increment';
     }
 
-    public static function getParameters(): array
+    public static function getParametersConfig(): array
     {
         return [
             new FormatChunkParameter('amount', 'numeric', 1),
@@ -22,9 +22,9 @@ class Increment extends FormatChunk
 
     public function getNextValue(Model $target, Model $owner): mixed
     {
-        $amount = (float) $this->getParameterValue('amount');
-        $groups = (int) $this->getParameterValue('group-by');
-        $groupSymbol = (string) $this->getParameterValue('group-symbol');
+        $amount = (float) $this->getParameter('amount');
+        $groups = (int) $this->getParameter('group-by');
+        $groupSymbol = (string) $this->getParameter('group-symbol');
 
         $value = $this->value;
 

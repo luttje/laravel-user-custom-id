@@ -36,15 +36,4 @@ class UserCustomId extends Model
     {
         return $this->morphTo();
     }
-
-    public function target()
-    {
-        return $this->morphTo();
-    }
-
-    public function scopeForOwner($query, Model $owner)
-    {
-        return $query->where('owner_id', $owner->getKey())
-            ->where('owner_type', $owner->getMorphClass());
-    }
 }

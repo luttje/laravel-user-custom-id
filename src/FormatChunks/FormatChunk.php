@@ -8,9 +8,14 @@ use Luttje\UserCustomId\Facades\UserCustomId;
 
 abstract class FormatChunk implements Arrayable
 {
+    /**
+     * The current value for this entire chunk.
+     */
     protected mixed $value = null;
 
-    /** @var FormatChunkParameter[] */
+    /**
+     * The values for the parameters of this chunk.
+     */
     protected array $parameters = [];
 
     /**
@@ -20,7 +25,7 @@ abstract class FormatChunk implements Arrayable
     public function __construct(
         ...$parameters
     ) {
-        $parameterTypes = static::getParameters();
+        $parameterTypes = static::getParametersConfig();
 
         foreach ($parameterTypes as $parameterType) {
             $name = $parameterType->getName();
@@ -32,13 +37,13 @@ abstract class FormatChunk implements Arrayable
             }
 
             if ($value === null) {
-                throw new \Exception("The parameter '{$name}' is required for chunk type '".static::getChunkId()."'.");
+                throw new \InvalidArgumentException("The parameter '{$name}' is required for chunk type '".static::getChunkId()."'.");
             }
 
             // Try cast the value to the specified type
             $value = match ($type) {
-                'integer' => (int) $value,
-                'numeric' => (float) $value,
+                'integer' => (is_numeric($value) && is_int((int) $value)) ? (int) $value : $value,
+                'float', 'double', 'numeric' => is_numeric($value) ? (float) $value : $value,
                 'string' => (string) $value,
                 'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
                 default => $value,
@@ -46,17 +51,17 @@ abstract class FormatChunk implements Arrayable
 
             if ($type === 'numeric') {
                 if (! is_numeric($value)) {
-                    throw new \Exception("The parameter '{$name}' must be numeric, '{$value}' given.");
+                    throw new \InvalidArgumentException("The parameter '{$name}' must be numeric, '{$value}' given.");
                 }
             } else {
                 $valueType = gettype($value);
 
                 if ($valueType !== $type) {
-                    throw new \Exception("The parameter '{$name}' must be of type '{$type}', '{$valueType}' given.");
+                    throw new \InvalidArgumentException("The parameter '{$name}' must be of type '{$type}', '{$valueType}' given.");
                 }
             }
 
-            $this->setParameterValue($name, $value);
+            $this->setParameter($name, $value);
         }
     }
 
@@ -71,7 +76,7 @@ abstract class FormatChunk implements Arrayable
      *
      * @return FormatChunkParameter[]
      */
-    public static function getParameters(): array
+    public static function getParametersConfig(): array
     {
         return [];
     }
@@ -79,11 +84,11 @@ abstract class FormatChunk implements Arrayable
     /**
      * Returns the parameter for the specified name.
      */
-    public static function getParameter(string $name): ?FormatChunkParameter
+    public static function getParameterConfig(string $name): ?FormatChunkParameter
     {
-        foreach (static::getParameters() as $parameter) {
-            if ($parameter->getName() === $name) {
-                return $parameter;
+        foreach (static::getParametersConfig() as $parameterConfig) {
+            if ($parameterConfig->getName() === $name) {
+                return $parameterConfig;
             }
         }
 
@@ -99,7 +104,7 @@ abstract class FormatChunk implements Arrayable
     {
         $defaults = [];
 
-        foreach (static::getParameters() as $name => $parameter) {
+        foreach (static::getParametersConfig() as $name => $parameter) {
             $defaults[$name] = $parameter->getDefaultValue();
         }
 
@@ -111,7 +116,7 @@ abstract class FormatChunk implements Arrayable
      */
     public static function getDefaultParameter(string $name): mixed
     {
-        return static::getParameter($name)?->getDefaultValue() ?? null;
+        return static::getParameterConfig($name)?->getDefaultValue() ?? null;
     }
 
     /**
@@ -156,7 +161,7 @@ abstract class FormatChunk implements Arrayable
     /**
      * Sets the specified parameter for this chunk.
      */
-    public function setParameterValue(string $name, mixed $value): void
+    public function setParameter(string $name, mixed $value): void
     {
         $this->parameters[$name] = $value;
     }
@@ -164,7 +169,7 @@ abstract class FormatChunk implements Arrayable
     /**
      * Returns the specified parameter for this chunk.
      */
-    public function getParameterValue(string $name): string
+    public function getParameter(string $name): string
     {
         return $this->parameters[$name] ?? static::getDefaultParameter($name);
     }
@@ -178,7 +183,7 @@ abstract class FormatChunk implements Arrayable
         $parameters = [];
 
         foreach ($this->parameters as $parameter) {
-            $parameters[] = $parameter->getName();
+            $parameters[] = $parameter;
         }
 
         return '{'.static::getChunkId().':'.implode(':', $parameters).'}';

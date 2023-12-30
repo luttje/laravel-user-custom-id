@@ -13,7 +13,7 @@ class Month extends FormatChunk
         return 'month';
     }
 
-    public static function getParameters(): array
+    public static function getParametersConfig(): array
     {
         return [
             new FormatChunkParameter('format', 'string', 'n'),
@@ -26,7 +26,7 @@ class Month extends FormatChunk
         $validMonthFormats = [
             'F', 'M', 'm', 'n', 't',
         ];
-        $format = (string) $this->getParameterValue('format');
+        $format = (string) $this->getParameter('format');
 
         if (! in_array($format, $validMonthFormats)) {
             $format = 'n';

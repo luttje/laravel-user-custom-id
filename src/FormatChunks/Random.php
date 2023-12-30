@@ -11,7 +11,7 @@ class Random extends FormatChunk
         return 'random';
     }
 
-    public static function getParameters(): array
+    public static function getParametersConfig(): array
     {
         return [
             new FormatChunkParameter('length', 'integer', 10),
@@ -21,7 +21,7 @@ class Random extends FormatChunk
 
     public function getNextValue(Model $target, Model $owner): mixed
     {
-        return $this->generateRandom((int) $this->getParameterValue('length'));
+        return $this->generateRandom((int) $this->getParameter('length'));
     }
 
     /**
@@ -29,7 +29,7 @@ class Random extends FormatChunk
      */
     public function generateRandom(int $length): string
     {
-        $characters = $this->getParameterValue('characters');
+        $characters = $this->getParameter('characters');
         $charactersLength = strlen($characters);
         $random = '';
 

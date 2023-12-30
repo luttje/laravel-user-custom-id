@@ -12,7 +12,7 @@ class Uuid extends FormatChunk
         return 'uuid';
     }
 
-    public static function getParameters(): array
+    public static function getParametersConfig(): array
     {
         return [
             new FormatChunkParameter('version', 'integer', 4),
@@ -22,7 +22,7 @@ class Uuid extends FormatChunk
     public function getNextValue(Model $target, Model $owner): mixed
     {
         $validVersions = [1, 4];
-        $version = (int) $this->getParameterValue('version');
+        $version = (int) $this->getParameter('version');
 
         if (! in_array($version, $validVersions)) {
             $version = 4;

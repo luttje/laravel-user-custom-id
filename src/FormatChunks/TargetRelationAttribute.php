@@ -11,18 +11,18 @@ class TargetRelationAttribute extends Attribute
         return 'attribute-relation';
     }
 
-    public static function getParameters(): array
+    public static function getParametersConfig(): array
     {
         return [
             new FormatChunkParameter('relation', 'string'),
             new FormatChunkParameter('attribute', 'string'),
-            ...static::getSubstringParameters(),
+            ...static::getSubstringParametersConfig(),
         ];
     }
 
     public function getNextValue(Model $target, Model $owner): mixed
     {
-        $relation = $this->getParameterValue('relation');
+        $relation = $this->getParameter('relation');
 
         $related = $target->{$relation};
 

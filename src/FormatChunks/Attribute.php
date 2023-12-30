@@ -9,11 +9,11 @@ abstract class Attribute extends FormatChunk
 {
     use WithFormatChunkSubstring;
 
-    public static function getParameters(): array
+    public static function getParametersConfig(): array
     {
         return [
             new FormatChunkParameter('attribute', 'string'),
-            ...static::getSubstringParameters(),
+            ...static::getSubstringParametersConfig(),
         ];
     }
 
@@ -35,7 +35,7 @@ abstract class Attribute extends FormatChunk
 
     public function getAttributeValue(Model $target): mixed
     {
-        $attribute = $this->getParameterValue('attribute');
+        $attribute = $this->getParameter('attribute');
 
         if (! self::isAllowed($target, $attribute)) {
             return '***';
@@ -47,6 +47,6 @@ abstract class Attribute extends FormatChunk
             return null;
         }
 
-        return $this->getSubstring($value);
+        return $this->handleSubstring($value);
     }
 }

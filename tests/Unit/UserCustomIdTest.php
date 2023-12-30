@@ -100,11 +100,85 @@ final class UserCustomIdTest extends TestCase
 
         $this->assertNotNull($ownerCustomIdExists);
 
+        $this->assertEquals($owner->id, $ownerCustomIdExists->owner->id);
+
         $lastId = $ownerCustomIdExists->last_target_custom_id;
 
         $this->assertNotNull($lastId);
 
         $this->assertEquals($expected, strval($lastId));
+    }
+
+    public function testGenerateForClassInstanceDifferentOwners()
+    {
+        // In a situation where multiple owners have the same format AND the same target type and attribute,
+        // If that attribute is unique, you will get a duplicate key error. In that situation you must ensure
+        // that you (or the user) adds some kind of unique identifier to the format, like the owner id.
+        // You will probably just not want to allow users to customize the primary key or unique attributes.
+        // If you really want to allow that, make sure the model also has an owner foreign key and the id
+        // is unique per owner ($table->unique(['custom_id', 'owner_id']);
+        $format = 'prefix-{increment}SUFFIX';
+        $expected = 'prefix-1SUFFIX';
+
+        $ownerA = $this->createOwnerWithCustomId(Product::class, $format, 'custom_id');
+        // Even if they have the same format it should work
+        $ownerB = $this->createOwnerWithCustomId(Product::class, $format, 'custom_id');
+
+        $productA = new Product([
+            'name' => 'Test Product A',
+            'slug' => 'test-product-a',
+            'description' => 'This is a test product.',
+            'owner_id' => $ownerA->custom_id,
+        ]);
+
+        UserCustomId::generateFor($productA, $ownerA);
+
+        $productA->save();
+
+        $productB = new Product([
+            'name' => 'Test Category B',
+            'slug' => 'test-product-b',
+            'description' => 'This is a test product.',
+            'owner_id' => $ownerB->custom_id,
+        ]);
+
+        UserCustomId::generateFor($productB, $ownerB);
+
+        $productB->save();
+
+        $resultA = $productA->custom_id;
+        $resultB = $productB->custom_id;
+
+        $this->assertEquals($expected, $resultA);
+        $this->assertEquals($expected, $resultB);
+
+        $productB2 = new Product([
+            'name' => 'Test Category B',
+            'slug' => 'test-product-b2',
+            'description' => 'This is a test product.',
+            'owner_id' => $ownerB->custom_id,
+        ]);
+
+        UserCustomId::generateFor($productB2, $ownerB);
+
+        $productB2->save();
+
+        // Get the last id for owner A and check that it's not the same as the last id for owner B.
+        // We don't want one user to influence the custom id of another user.
+        $ownerACustomIdExists = \Luttje\UserCustomId\UserCustomId::where('owner_id', $ownerA->id)->latest()->first();
+        $ownerBCustomIdExists = \Luttje\UserCustomId\UserCustomId::where('owner_id', $ownerB->id)->latest()->first();
+
+        $this->assertNotNull($ownerACustomIdExists);
+        $this->assertNotNull($ownerBCustomIdExists);
+
+        $lastIdA = $ownerACustomIdExists->last_target_custom_id;
+        $lastIdB = $ownerBCustomIdExists->last_target_custom_id;
+
+        $this->assertNotNull($lastIdA);
+        $this->assertNotNull($lastIdB);
+
+        $this->assertEquals($expected, strval($lastIdA));
+        $this->assertNotEquals($expected, strval($lastIdB));
     }
 
     public function testGenerateForClassInstanceWithLastValueChunks()
