@@ -166,15 +166,4 @@ composer test
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-more information.
-:
-
-```bash
-composer test
-```
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-more information.
+This package is open-sourced software licensed under the MIT license. Please see the [license file](LICENSE.md) for more information.
