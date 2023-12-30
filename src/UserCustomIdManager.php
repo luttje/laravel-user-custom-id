@@ -3,7 +3,6 @@
 namespace Luttje\UserCustomId;
 
 use Illuminate\Database\Eloquent\Model;
-use Luttje\UserCustomId\Contracts\HasUserCustomId;
 use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 use Luttje\UserCustomId\FormatChunks\Literal;
 
@@ -86,22 +85,12 @@ class UserCustomIdManager
         if ($customId) {
             $chunks = $this->parseCustomId($customId);
             $nextCustomId = $this->generateNextCustomId($chunks, $target, $owner);
-            $shouldUpdateLatest = true;
 
             $target->{$customId->target_attribute} = $nextCustomId;
 
-            if (in_array(HasUserCustomId::class, class_implements($target))) {
-                // The trait will save in the eloquent created event.
-                $shouldUpdateLatest = false;
-                /** @var HasUserCustomId $target */
-                $target->queueCustomIdUpdate($customId, $chunks);
-            }
-
-            if ($shouldUpdateLatest) {
-                $customId->update([
-                    'last_target_custom_id' => $chunks,
-                ]);
-            }
+            $customId->update([
+                'last_target_custom_id' => $chunks,
+            ]);
 
             return $nextCustomId;
         }

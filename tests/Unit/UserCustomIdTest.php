@@ -2,7 +2,6 @@
 
 namespace Luttje\UserCustomId\Tests\Unit;
 
-use Illuminate\Support\Facades\DB;
 use Luttje\UserCustomId\Facades\UserCustomId;
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
 use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
@@ -197,94 +196,6 @@ final class UserCustomIdTest extends TestCase
         $this->expectExceptionMessage('Cannot create a custom id for a model without an owner. Did you forget to implement the getOwner() method?');
 
         $category->save();
-    }
-
-    public function testGenerateForClassInstanceInsideTransaction()
-    {
-        $format = 'prefix-{increment}SUFFIX';
-        $expected = 'prefix-1SUFFIX';
-
-        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id');
-
-        $category = new Category([
-            'name' => 'Test Category',
-            'slug' => 'test-category',
-            'description' => 'This is a test category.',
-            'owner_id' => $owner->id,
-        ]);
-
-        DB::beginTransaction();
-        $category->save();
-        DB::commit();
-
-        $this->assertDatabaseHas('categories', [
-            'id' => $expected,
-        ]);
-
-        $ownerCustomIdExists = \Luttje\UserCustomId\UserCustomId::latest()->first();
-
-        $lastId = $ownerCustomIdExists->last_target_custom_id;
-
-        $this->assertNotNull($lastId);
-        $this->assertEquals($expected, strval($lastId));
-    }
-
-    public function testGenerateForClassInstanceInsideRollbackTransaction()
-    {
-        $format = 'prefix-{increment}SUFFIX';
-        $expected = 'prefix-1SUFFIX';
-
-        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id');
-
-        $category = new Category([
-            'name' => 'Test Category',
-            'slug' => 'test-category',
-            'description' => 'This is a test category.',
-            'owner_id' => $owner->id,
-        ]);
-
-        DB::beginTransaction();
-        $category->save();
-        DB::rollBack();
-
-        $this->assertDatabaseMissing('categories', [
-            'id' => $expected,
-        ]);
-
-        $ownerCustomIdExists = \Luttje\UserCustomId\UserCustomId::latest()->first();
-
-        $lastId = $ownerCustomIdExists->last_target_custom_id;
-
-        $this->assertNull($lastId);
-    }
-
-    public function testGenerateForClassInstanceInsideFailingTransaction()
-    {
-        $format = 'prefix-{increment}SUFFIX';
-        $expected = 'prefix-1SUFFIX';
-
-        $owner = $this->createOwnerWithCustomId(Category::class, $format, 'id');
-
-        $category = new Category([
-            // 'name' => 'Test Category', // Should fail because of missing name.
-            'slug' => 'test-category',
-            'description' => 'This is a test category.',
-            'owner_id' => $owner->id,
-        ]);
-
-        $this->expectException(\Illuminate\Database\QueryException::class);
-
-        $category->save();
-
-        $this->assertDatabaseMissing('categories', [
-            'custom_id' => $expected,
-        ]);
-
-        $ownerCustomIdExists = \Luttje\UserCustomId\UserCustomId::latest()->first();
-
-        $lastId = $ownerCustomIdExists->last_target_custom_id;
-
-        $this->assertNull($lastId);
     }
 
     public function testGenerateForClassInstanceWithForeignId()

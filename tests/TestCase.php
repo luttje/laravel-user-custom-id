@@ -2,8 +2,9 @@
 
 namespace Luttje\UserCustomId\Tests;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Luttje\UserCustomId\Facades\UserCustomId;
 use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 use Luttje\UserCustomId\FormatChunks\Literal;
@@ -13,15 +14,14 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
+    use RefreshDatabase;
 
-        Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Luttje\\UserCustomId\\Tests\\Fixtures\\Database\\Factories\\'.class_basename($modelName).'Factory',
-        );
-    }
-
+    /**
+     * Get package providers.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return array<int, class-string<\Illuminate\Support\ServiceProvider>>
+     */
     protected function getPackageProviders($app)
     {
         return [
@@ -29,36 +29,35 @@ class TestCase extends Orchestra
         ];
     }
 
-    protected function getEnvironmentSetUp($app): void
+    /**
+     * Define environment setup.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return void
+     */
+    protected function defineEnvironment($app)
     {
-        $app['config']->set('app.env', env('APP_ENV', 'testing'));
-        $app['config']->set('app.debug', env('APP_DEBUG', true));
-        $app['config']->set('app.key', 'base64:Hupx3yAySikrM2/edkZQNQHslgDWYfiBfCuSThJ5SK8=');
+        tap($app['config'], function (Repository $config) {
+            $config->set('database.default', 'testing');
+            $config->set('database.connections.testing', [
+                'driver' => 'sqlite',
+                'database' => ':memory:',
+            ]);
 
-        $app['config']->set('database.default', 'testing');
-        $app['config']->set('database.connections.testing', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-        ]);
+            $config->set('app.env', env('APP_ENV', 'testing'));
+            $config->set('app.debug', env('APP_DEBUG', true));
+            $config->set('app.key', 'base64:Hupx3yAySikrM2/edkZQNQHslgDWYfiBfCuSThJ5SK8=');
+        });
     }
 
     protected function defineDatabaseMigrations()
     {
-        $this->loadLaravelMigrations(['--database' => 'testing']);
+        $this->loadLaravelMigrations();
 
-        $this->loadMigrationsFrom([
-            '--database' => 'testing',
-            '--path' => realpath(__DIR__.'/../Database/migrations'),
-        ]);
+        $this->loadMigrationsFrom(realpath(__DIR__.'/../database/migrations'));
 
         // Test only migrations
-        $this->loadMigrationsFrom([
-            '--database' => 'testing',
-            '--path' => realpath(__DIR__.'/Fixtures/Database/migrations'),
-        ]);
-
-        $this->artisan('migrate', ['--database' => 'testing'])
-            ->run();
+        $this->loadMigrationsFrom(realpath(__DIR__.'/Fixtures/Database/migrations'));
     }
 
     protected function createCustomId(

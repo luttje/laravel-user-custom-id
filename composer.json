@@ -25,7 +25,7 @@
         "laravel/pint": "^1.0",
         "luttje/php-example-tester": "^0.2.1",
         "nunomaduro/collision": "^7.9",
-        "orchestra/testbench": ">=8.18.0 <8.19.0",
+        "orchestra/testbench": "^8.0",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
@@ -38,12 +38,10 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Luttje\\UserCustomId\\Tests\\": "tests/",
-            "Luttje\\UserCustomId\\Tests\\Fixtures\\Database\\Factories\\": "tests/Fixtures/Database/Factories/"
+            "Luttje\\UserCustomId\\Tests\\": "tests/"
         }
     },
     "scripts": {
-        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
         "analyse": "vendor/bin/phpstan analyse",
         "compile-readme": "vendor/bin/example-tester compile",
         "test": "vendor/bin/phpunit tests",
