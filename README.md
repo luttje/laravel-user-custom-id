@@ -90,6 +90,11 @@ Apply the `HasUserCustomId` interface and `WithUserCustomId` trait to your model
 <!-- #EXAMPLE_COPY_START = { "symbol": "\\Luttje\\UserCustomId\\Tests\\Fixtures\\Models\\Category", "short": false } -->
 
 ```php
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
+use Luttje\UserCustomId\Contracts\HasUserCustomId;
+use Luttje\UserCustomId\Traits\WithUserCustomId;
+
 class Category extends Model implements HasUserCustomId
 {
     use HasUuids;

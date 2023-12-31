@@ -23,7 +23,7 @@
     "require-dev": {
         "larastan/larastan": "^2.0.1",
         "laravel/pint": "^1.0",
-        "luttje/php-example-tester": "^0.2.1",
+        "luttje/php-example-tester": "^0.2.2",
         "nunomaduro/collision": "^7.9",
         "orchestra/testbench": "^8.0",
         "phpstan/extension-installer": "^1.1",
