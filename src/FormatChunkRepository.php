@@ -78,8 +78,8 @@ class FormatChunkRepository
      * generated for this format. It's already parsed into chunks (because
      * that is how it's saved in the database)
      *
-     * @param  string  $chunkString The chunk string to parse (e.g: {increment:5:00000})
-     * @param  FormatChunkCollection  $lastValueChunks The last value that was generated for this format.
+     * @param  string  $chunkString  The chunk string to parse (e.g: {increment:5:00000})
+     * @param  FormatChunkCollection  $lastValueChunks  The last value that was generated for this format.
      */
     public function getChunk(string $chunkString, ?FormatChunkCollection $lastValueChunks = null): ?FormatChunk
     {
