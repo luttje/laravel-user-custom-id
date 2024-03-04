@@ -16,11 +16,12 @@ abstract class FormatChunkTestCase extends TestCase
         ]);
     }
 
-    protected function getNextValue(FormatChunk $chunk)
+    protected function getNextValue(FormatChunk $chunk, array $mockModelMethods = [])
     {
         // mock a target and owner model (not needed for Random)
         /** @var \Illuminate\Database\Eloquent\Model */
         $target = $this->getMockBuilder(\Illuminate\Database\Eloquent\Model::class)
+            ->onlyMethods($mockModelMethods)
             ->getMock();
 
         return $chunk->getNextValue($target, $target);
