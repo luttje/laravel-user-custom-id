@@ -27,7 +27,7 @@ jobs:
             carbon: ^2.63
             phpunit: 10.*
           - laravel: 11.*
-            testbench: 9.*
+            testbench: ^9.1.4|^10.0
             carbon: ^2.63
             phpunit: 11.*
         exclude:
