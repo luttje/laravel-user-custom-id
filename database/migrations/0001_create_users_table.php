@@ -8,6 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Don't run for versions before Laravel 11, as they include these tables by default
+        if (version_compare(app()->version(), '11.0.0', '<')) {
+            return;
+        }
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -36,6 +41,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (version_compare(app()->version(), '11.0.0', '<')) {
+            return;
+        }
+
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
