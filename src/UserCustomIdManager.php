@@ -145,7 +145,7 @@ class UserCustomIdManager
 
             if ($char === '{' && ! $isEscaped) {
                 if ($currentChunkString) {
-                    $literal = new Literal();
+                    $literal = new Literal;
                     $literal->setValue($currentChunkString);
 
                     $chunks[] = $literal;
@@ -178,7 +178,7 @@ class UserCustomIdManager
         }
 
         if ($currentChunkString) {
-            $literal = new Literal();
+            $literal = new Literal;
             $literal->setValue($currentChunkString);
 
             $chunks[] = $literal;

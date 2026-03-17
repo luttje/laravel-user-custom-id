@@ -16,17 +16,17 @@ final class UserCustomIdTest extends TestCase
         $chunkType = UserCustomId::getChunkType($id);
 
         /** @var FormatChunk */
-        $chunk = new $chunkType();
+        $chunk = new $chunkType;
         $chunk->setValue($value);
 
         return $chunk;
     }
 
-    public function testGenerateSimpleIncrement()
+    public function test_generate_simple_increment()
     {
         $format = 'prefix-{increment}SUFFIX';
         $lastValueChunks = new FormatChunkCollection([
-            //'prefix-123455SUFFIX';
+            // 'prefix-123455SUFFIX';
             $this->makeLiteral('prefix-'),
             $this->makeChunk('increment', 123455),
             $this->makeLiteral('SUFFIX'),
@@ -47,7 +47,7 @@ final class UserCustomIdTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testGenerateForClassType()
+    public function test_generate_for_class_type()
     {
         $format = 'prefix-{increment}SUFFIX';
         $expected = 'prefix-1SUFFIX';
@@ -72,7 +72,7 @@ final class UserCustomIdTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testGenerateForClassInstance()
+    public function test_generate_for_class_instance()
     {
         $format = 'prefix-{increment}SUFFIX';
         $expected = 'prefix-1SUFFIX';
@@ -109,7 +109,7 @@ final class UserCustomIdTest extends TestCase
         $this->assertEquals($expected, strval($lastId));
     }
 
-    public function testGenerateForClassInstanceDifferentOwners()
+    public function test_generate_for_class_instance_different_owners()
     {
         // In a situation where multiple owners have the same format AND the same target type and attribute,
         // If that attribute is unique, you will get a duplicate key error. In that situation you must ensure
@@ -181,7 +181,7 @@ final class UserCustomIdTest extends TestCase
         $this->assertNotEquals($expected, strval($lastIdB));
     }
 
-    public function testGenerateForClassInstanceWithLastValueChunks()
+    public function test_generate_for_class_instance_with_last_value_chunks()
     {
         $format = 'prefix-{increment}SUFFIX';
         $lastValueChunks = new FormatChunkCollection([
@@ -217,7 +217,7 @@ final class UserCustomIdTest extends TestCase
         $this->assertEquals($expected, strval($lastId));
     }
 
-    public function testGenerateForClassInstanceIntoIdAttribute()
+    public function test_generate_for_class_instance_into_id_attribute()
     {
         $format = 'prefix-{increment}SUFFIX';
         $expected = 'prefix-1SUFFIX';
@@ -253,7 +253,7 @@ final class UserCustomIdTest extends TestCase
         ]);
     }
 
-    public function testGenerateForClassInstanceFailsWithoutOwner()
+    public function test_generate_for_class_instance_fails_without_owner()
     {
         $format = 'prefix-{increment}SUFFIX';
 
@@ -272,7 +272,7 @@ final class UserCustomIdTest extends TestCase
         $category->save();
     }
 
-    public function testGenerateForClassInstanceWithForeignId()
+    public function test_generate_for_class_instance_with_foreign_id()
     {
         $format = 'prefix-{increment}SUFFIX';
         $expected = 'prefix-1SUFFIX';

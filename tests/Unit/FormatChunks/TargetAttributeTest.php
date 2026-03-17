@@ -8,7 +8,7 @@ use Luttje\UserCustomId\Tests\Fixtures\Models\User;
 
 final class TargetAttributeTest extends FormatChunkTestCase
 {
-    public function testTargetAttribute(): void
+    public function test_target_attribute(): void
     {
         $chunk = $this->getChunk('attribute', ['name']);
 
@@ -21,7 +21,7 @@ final class TargetAttributeTest extends FormatChunkTestCase
         $this->assertEquals('Test Category', $chunk->getNextValue($category, $owner));
     }
 
-    public function testTargetAttributeWithSubstringStart(): void
+    public function test_target_attribute_with_substring_start(): void
     {
         $chunk = $this->getChunk('attribute', [
             'name',
@@ -37,7 +37,7 @@ final class TargetAttributeTest extends FormatChunkTestCase
         $this->assertEquals('67890', $chunk->getNextValue($category, $owner));
     }
 
-    public function testTargetAttributeWithSubstringLength(): void
+    public function test_target_attribute_with_substring_length(): void
     {
         $chunk = $this->getChunk('attribute', [
             'name',
@@ -54,7 +54,7 @@ final class TargetAttributeTest extends FormatChunkTestCase
         $this->assertEquals('12345', $chunk->getNextValue($category, $owner));
     }
 
-    public function testTargetAttributeWithSubstringStartAndLength(): void
+    public function test_target_attribute_with_substring_start_and_length(): void
     {
         $chunk = $this->getChunk('attribute', [
             'name',
@@ -71,7 +71,7 @@ final class TargetAttributeTest extends FormatChunkTestCase
         $this->assertEquals('67890', $chunk->getNextValue($category, $owner));
     }
 
-    public function testTargetAttributeCannotAccessNonExistant()
+    public function test_target_attribute_cannot_access_non_existant()
     {
         $chunk = $this->getChunk('attribute', ['asdasdasdasdasdasd']);
 
@@ -84,7 +84,7 @@ final class TargetAttributeTest extends FormatChunkTestCase
         $this->assertEquals('', $chunk->getNextValue($category, $owner));
     }
 
-    public function testTargetAttributeCannotAccessHidden()
+    public function test_target_attribute_cannot_access_hidden()
     {
         $chunk = $this->getChunk('attribute', ['id']);
 
@@ -97,7 +97,7 @@ final class TargetAttributeTest extends FormatChunkTestCase
         $this->assertEquals('***', $chunk->getNextValue($category, $owner));
     }
 
-    public function testTargetAttributeCannotAccessHiddenSubstring()
+    public function test_target_attribute_cannot_access_hidden_substring()
     {
         $chunk = $this->getChunk('attribute', [
             'id',
@@ -114,7 +114,7 @@ final class TargetAttributeTest extends FormatChunkTestCase
         $this->assertEquals('***', $chunk->getNextValue($category, $owner));
     }
 
-    public function testTargetAttributeCannotAccessRelationship()
+    public function test_target_attribute_cannot_access_relationship()
     {
         $chunk = $this->getChunk('attribute', [
             'products',

@@ -4,6 +4,7 @@ namespace Luttje\UserCustomId\Facades;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
+use Luttje\UserCustomId\UserCustomIdManager;
 
 /**
  * @method static \Luttje\UserCustomId\UserCustomId createFormat(string $targetClass, Model $owner, string $format, string $targetAttribute, ?FormatChunkCollection $lastValueChunks = null)
@@ -21,6 +22,6 @@ class UserCustomId extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Luttje\UserCustomId\UserCustomIdManager::class;
+        return UserCustomIdManager::class;
     }
 }

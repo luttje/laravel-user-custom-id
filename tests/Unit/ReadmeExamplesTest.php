@@ -37,7 +37,7 @@ final class ReadmeExamplesTest extends TestCase
         $product->save();
     }
 
-    public function testExampleBasics(): void
+    public function test_example_basics(): void
     {
         $user = User::factory()->create([
             'name' => 'Jane',
@@ -84,7 +84,7 @@ final class ReadmeExamplesTest extends TestCase
         return $category;
     }
 
-    public function testExampleTrait(): void
+    public function test_example_trait(): void
     {
         $user = User::factory()->create();
 

@@ -24,7 +24,7 @@ class UserCustomIdServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         $this->app->singleton(UserCustomIdManager::class, function ($app) {
-            return new UserCustomIdManager();
+            return new UserCustomIdManager;
         });
     }
 }

@@ -8,7 +8,7 @@ use Luttje\UserCustomId\Tests\Fixtures\Models\User;
 
 final class TargetRelationAttributeTest extends FormatChunkTestCase
 {
-    public function testTargetAttributeInRelationship()
+    public function test_target_attribute_in_relationship()
     {
         $chunk = $this->getChunk('attribute-relation', [
             'owner',
@@ -26,7 +26,7 @@ final class TargetRelationAttributeTest extends FormatChunkTestCase
         $this->assertEquals('Test User', $chunk->getNextValue($category, $owner));
     }
 
-    public function testTargetAttributeCannotAccessHiddenInRelationship()
+    public function test_target_attribute_cannot_access_hidden_in_relationship()
     {
         $chunk = $this->getChunk('attribute-relation', [
             'category',
@@ -58,7 +58,7 @@ final class TargetRelationAttributeTest extends FormatChunkTestCase
         $this->assertEquals('***', $chunk->getNextValue($product, $owner));
     }
 
-    public function testTargetAttributeCannotAccessRelationshipInRelationship()
+    public function test_target_attribute_cannot_access_relationship_in_relationship()
     {
         $chunk = $this->getChunk('attribute-relation', [
             'category',
