@@ -7,7 +7,7 @@ use Luttje\UserCustomId\Tests\Fixtures\MockRandomChunk;
 
 final class RandomTest extends FormatChunkTestCase
 {
-    public function testRandom(): void
+    public function test_random(): void
     {
         $chunk = $this->getChunk('random', [10, 'A']);
 
@@ -16,7 +16,7 @@ final class RandomTest extends FormatChunkTestCase
         $this->assertEquals('AAAAAAAAAA', $this->getNextValue($chunk));
     }
 
-    public function testRandomWithCustomCharacters(): void
+    public function test_random_with_custom_characters(): void
     {
         // Mock random function
         MockRandomChunk::$sequence = [0, 1, 2, 3, 4];
@@ -27,7 +27,7 @@ final class RandomTest extends FormatChunkTestCase
         $this->assertEquals('AbCdE', $this->getNextValue($chunk));
     }
 
-    public function testRandomWithCustomCharactersAndLength(): void
+    public function test_random_with_custom_characters_and_length(): void
     {
         // Mock random function
         MockRandomChunk::$sequence = [0, 1, 2, 3, 4];

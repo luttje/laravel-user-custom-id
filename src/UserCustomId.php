@@ -3,6 +3,7 @@
 namespace Luttje\UserCustomId;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Luttje\UserCustomId\Casts\FormatChunkCollectionCast;
 use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 
@@ -14,8 +15,8 @@ use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
  * @property string $target_attribute
  * @property string $format
  * @property FormatChunkCollection $last_target_custom_id
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  */
 class UserCustomId extends Model
 {

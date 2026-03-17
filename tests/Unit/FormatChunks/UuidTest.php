@@ -15,7 +15,7 @@ final class UuidTest extends FormatChunkTestCase
 {
     private function setUuidMockFactory(string $expected)
     {
-        $realFactory = new UuidFactory();
+        $realFactory = new UuidFactory;
 
         Uuid::setFactory(new class($realFactory, $expected) implements UuidFactoryInterface
         {
@@ -105,14 +105,14 @@ final class UuidTest extends FormatChunkTestCase
         });
     }
 
-    public function testCanGenerateValidUuid(): void
+    public function test_can_generate_valid_uuid(): void
     {
         $chunk = $this->getChunk('uuid', []);
 
         $this->assertMatchesRegularExpression('/^[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$/i', $this->getNextValue($chunk));
     }
 
-    public function testCanGenerateUuid(): void
+    public function test_can_generate_uuid(): void
     {
         $this->setUuidMockFactory('7841391a-2b16-4c27-b384-4ed8baa05db6');
 
@@ -121,7 +121,7 @@ final class UuidTest extends FormatChunkTestCase
         $this->assertEquals('7841391a-2b16-4c27-b384-4ed8baa05db6', $this->getNextValue($chunk));
     }
 
-    public function testCanGenerateUuidV1(): void
+    public function test_can_generate_uuid_v1(): void
     {
         $this->setUuidMockFactory('b99c6428-a65e-11ee-a506-0242ac120002');
 
@@ -130,7 +130,7 @@ final class UuidTest extends FormatChunkTestCase
         $this->assertEquals('b99c6428-a65e-11ee-a506-0242ac120002', $this->getNextValue($chunk));
     }
 
-    public function testCanGenerateUuidV4(): void
+    public function test_can_generate_uuid_v4(): void
     {
         $this->setUuidMockFactory('7841391a-2b16-4c27-b384-4ed8baa05db6');
 

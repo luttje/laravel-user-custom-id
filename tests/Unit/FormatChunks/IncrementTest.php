@@ -8,7 +8,7 @@ use Luttje\UserCustomId\Tests\Fixtures\Models\Category;
 
 final class IncrementTest extends FormatChunkTestCase
 {
-    public function testIncrement(): void
+    public function test_increment(): void
     {
         $chunk = $this->getChunk('increment', [1]);
 
@@ -24,7 +24,7 @@ final class IncrementTest extends FormatChunkTestCase
         $this->assertEquals('0', $this->getNextValue($chunk));
     }
 
-    public function testIncrementDouble(): void
+    public function test_increment_double(): void
     {
         $chunk = $this->getChunk('increment', [0.1]);
 
@@ -43,14 +43,14 @@ final class IncrementTest extends FormatChunkTestCase
         $this->assertEquals('0', $this->getNextValue($chunk));
     }
 
-    public function testIncrementGrouping(): void
+    public function test_increment_grouping(): void
     {
         $chunk = $this->getChunk('increment', [1, 3, '-'], 1234566);
 
         $this->assertEquals('123-456-7', $this->getNextValue($chunk));
     }
 
-    public function testIncrementGroupingForInstance(): void
+    public function test_increment_grouping_for_instance(): void
     {
         $lastValueChunks = new FormatChunkCollection([
             $this->getChunk('increment', [1, 3, '-'], 1234567),

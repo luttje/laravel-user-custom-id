@@ -2,6 +2,7 @@
 
 namespace Luttje\UserCustomId\Tests\Unit\FormatChunks;
 
+use Illuminate\Database\Eloquent\Model;
 use Luttje\UserCustomId\FormatChunks\FormatChunk;
 use Luttje\UserCustomId\Tests\TestCase;
 
@@ -19,8 +20,8 @@ abstract class FormatChunkTestCase extends TestCase
     protected function getNextValue(FormatChunk $chunk, array $mockModelMethods = [])
     {
         // mock a target and owner model (not needed for Random)
-        /** @var \Illuminate\Database\Eloquent\Model */
-        $target = $this->getMockBuilder(\Illuminate\Database\Eloquent\Model::class)
+        /** @var Model */
+        $target = $this->getMockBuilder(Model::class)
             ->onlyMethods($mockModelMethods)
             ->getMock();
 
