@@ -13,8 +13,22 @@ use Ramsey\Uuid\Validator\ValidatorInterface;
 
 final class UuidTest extends FormatChunkTestCase
 {
+    private ?UuidFactoryInterface $originalFactory = null;
+
+    protected function tearDown(): void
+    {
+        if ($this->originalFactory !== null) {
+            Uuid::setFactory($this->originalFactory);
+            $this->originalFactory = null;
+        }
+
+        parent::tearDown();
+    }
+
     private function setUuidMockFactory(string $expected)
     {
+        $this->originalFactory = Uuid::getFactory();
+
         $realFactory = new UuidFactory;
 
         Uuid::setFactory(new class($realFactory, $expected) implements UuidFactoryInterface
