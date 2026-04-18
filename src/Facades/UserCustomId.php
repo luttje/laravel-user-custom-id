@@ -4,6 +4,7 @@ namespace Luttje\UserCustomId\Facades;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
+use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 use Luttje\UserCustomId\UserCustomIdManager;
 
 /**

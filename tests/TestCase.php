@@ -46,8 +46,8 @@ class TestCase extends Orchestra
                 'database' => ':memory:',
             ]);
 
-            $config->set('app.env', env('APP_ENV', 'testing'));
-            $config->set('app.debug', env('APP_DEBUG', true));
+            $config->set('app.env', 'testing');
+            $config->set('app.debug', true);
             $config->set('app.key', 'base64:Hupx3yAySikrM2/edkZQNQHslgDWYfiBfCuSThJ5SK8=');
         });
     }
@@ -56,10 +56,10 @@ class TestCase extends Orchestra
     {
         $this->loadLaravelMigrations();
 
-        $this->loadMigrationsFrom(realpath(__DIR__.'/../database/migrations'));
+        $this->loadMigrationsFrom(realpath(__DIR__ . '/../database/migrations'));
 
         // Test only migrations
-        $this->loadMigrationsFrom(realpath(__DIR__.'/Fixtures/Database/migrations'));
+        $this->loadMigrationsFrom(realpath(__DIR__ . '/Fixtures/Database/migrations'));
     }
 
     protected function createCustomId(

@@ -49,16 +49,19 @@ final class UuidTest extends FormatChunkTestCase
             }
 
             // Create empty other functions that meet bare minimum requirements
+            /** @phpstan-impure */
             public function fromBytes(string $bytes): UuidInterface
             {
                 return $this->realFactory->fromString($this->expected);
             }
 
+            /** @phpstan-impure */
             public function fromString(string $uuid): UuidInterface
             {
                 return $this->realFactory->fromString($this->expected);
             }
 
+            /** @phpstan-impure */
             public function fromInteger(string $integer): UuidInterface
             {
                 return $this->realFactory->fromString($this->expected);
@@ -102,11 +105,13 @@ final class UuidTest extends FormatChunkTestCase
                 return $this->realFactory->fromString($this->expected);
             }
 
+            /** @phpstan-impure */
             public function uuid3($ns, string $name): UuidInterface
             {
                 return $this->realFactory->fromString($this->expected);
             }
 
+            /** @phpstan-impure */
             public function uuid5($ns, string $name): UuidInterface
             {
                 return $this->realFactory->fromString($this->expected);

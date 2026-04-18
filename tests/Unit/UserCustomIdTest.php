@@ -100,7 +100,7 @@ final class UserCustomIdTest extends TestCase
 
         $this->assertNotNull($ownerCustomIdExists);
 
-        $this->assertEquals($owner->id, $ownerCustomIdExists->owner->id);
+        $this->assertEquals($owner->id, $ownerCustomIdExists->owner?->getKey());
 
         $lastId = $ownerCustomIdExists->last_target_custom_id;
 

@@ -10,54 +10,54 @@ use Luttje\UserCustomId\Tests\Fixtures\Database\Factories\UserFactory;
 
 class User extends Authenticatable
 {
-    use HasFactory;
-    use Notifiable;
+  use HasFactory;
+  use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+  /**
+   * The attributes that are mass assignable.
+   *
+   * @var list<string>
+   */
+  protected $fillable = [
+    'name',
+    'email',
+    'password',
+  ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+  /**
+   * The attributes that should be hidden for serialization.
+   *
+   * @var list<string>
+   */
+  protected $hidden = [
+    'password',
+    'remember_token',
+  ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+  /**
+   * The attributes that should be cast.
+   *
+   * @var array<string, string>
+   */
+  protected $casts = [
+    'email_verified_at' => 'datetime',
+  ];
 
-    /**
-     * The categories owned by this user.
-     */
-    public function categories()
-    {
-        return $this->hasMany(Category::class, 'owner_id');
-    }
+  /**
+   * The categories owned by this user.
+   */
+  public function categories()
+  {
+    return $this->hasMany(Category::class, 'owner_id');
+  }
 
-    /**
-     * Create a new factory instance for the model.
-     *
-     * @return Factory
-     */
-    protected static function newFactory()
-    {
-        return UserFactory::new();
-    }
+  /**
+   * Create a new factory instance for the model.
+   *
+   * @return Factory
+   */
+  protected static function newFactory()
+  {
+    return UserFactory::new();
+  }
 }

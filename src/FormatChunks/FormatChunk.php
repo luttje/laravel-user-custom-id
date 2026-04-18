@@ -37,12 +37,12 @@ abstract class FormatChunk implements Arrayable
             }
 
             if ($value === null) {
-                throw new \InvalidArgumentException("The parameter '{$name}' is required for chunk type '".static::getChunkId()."'.");
+                throw new \InvalidArgumentException("The parameter '{$name}' is required for chunk type '" . static::getChunkId() . "'.");
             }
 
             // Try cast the value to the specified type
             $value = match ($type) {
-                'integer' => (is_numeric($value) && is_int((int) $value)) ? (int) $value : $value,
+                'integer' => is_numeric($value) ? (int) $value : $value,
                 'float', 'double', 'numeric' => is_numeric($value) ? (float) $value : $value,
                 'string' => (string) $value,
                 'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
@@ -186,7 +186,7 @@ abstract class FormatChunk implements Arrayable
             $parameters[] = $parameter;
         }
 
-        return '{'.static::getChunkId().':'.implode(':', $parameters).'}';
+        return '{' . static::getChunkId() . ':' . implode(':', $parameters) . '}';
     }
 
     /**
@@ -216,7 +216,7 @@ abstract class FormatChunk implements Arrayable
             throw new \Exception("The chunk type '{$id}' is not registered.");
         }
 
-        /** @var FormatChunk */
+        /** @var FormatChunk $chunk */
         $chunk = new $chunkType(...$parameters);
 
         $chunk->setValue($value);

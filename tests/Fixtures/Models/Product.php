@@ -5,6 +5,9 @@ namespace Luttje\UserCustomId\Tests\Fixtures\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string|null $custom_id
+ */
 class Product extends Model
 {
     use HasUuids;
@@ -12,7 +15,7 @@ class Product extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',

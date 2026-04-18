@@ -14,9 +14,10 @@ use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
  * @property string $target_type
  * @property string $target_attribute
  * @property string $format
- * @property FormatChunkCollection $last_target_custom_id
+ * @property FormatChunkCollection|null $last_target_custom_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Model|null $owner
  */
 class UserCustomId extends Model
 {

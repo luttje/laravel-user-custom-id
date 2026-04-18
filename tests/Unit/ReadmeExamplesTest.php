@@ -22,6 +22,7 @@ final class ReadmeExamplesTest extends TestCase
         );
     }
 
+    /** @param-out Product $product */
     public static function exampleGenerateIdInFormat(?Product &$product)
     {
         $user = auth()->user(); // Logged in as 'Jane'
