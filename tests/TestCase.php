@@ -56,10 +56,10 @@ class TestCase extends Orchestra
     {
         $this->loadLaravelMigrations();
 
-        $this->loadMigrationsFrom(realpath(__DIR__ . '/../database/migrations'));
+        $this->loadMigrationsFrom(realpath(__DIR__.'/../database/migrations'));
 
         // Test only migrations
-        $this->loadMigrationsFrom(realpath(__DIR__ . '/Fixtures/Database/migrations'));
+        $this->loadMigrationsFrom(realpath(__DIR__.'/Fixtures/Database/migrations'));
     }
 
     protected function createCustomId(

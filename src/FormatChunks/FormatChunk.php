@@ -37,7 +37,7 @@ abstract class FormatChunk implements Arrayable
             }
 
             if ($value === null) {
-                throw new \InvalidArgumentException("The parameter '{$name}' is required for chunk type '" . static::getChunkId() . "'.");
+                throw new \InvalidArgumentException("The parameter '{$name}' is required for chunk type '".static::getChunkId()."'.");
             }
 
             // Try cast the value to the specified type
@@ -186,7 +186,7 @@ abstract class FormatChunk implements Arrayable
             $parameters[] = $parameter;
         }
 
-        return '{' . static::getChunkId() . ':' . implode(':', $parameters) . '}';
+        return '{'.static::getChunkId().':'.implode(':', $parameters).'}';
     }
 
     /**

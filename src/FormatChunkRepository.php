@@ -16,10 +16,10 @@ class FormatChunkRepository
      */
     public function registerDefaultChunkTypes()
     {
-        $files = File::allFiles(__DIR__ . '/FormatChunks');
+        $files = File::allFiles(__DIR__.'/FormatChunks');
 
         foreach ($files as $file) {
-            $class = 'Luttje\\UserCustomId\\' . str_replace(
+            $class = 'Luttje\\UserCustomId\\'.str_replace(
                 ['/', '.php'],
                 ['\\', ''],
                 trim(substr($file, strlen(__DIR__)), '/\\')
