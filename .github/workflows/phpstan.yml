@@ -3,9 +3,9 @@ name: PHPStan
 on:
   push:
     paths:
-      - '**.php'
-      - 'phpstan.neon.dist'
-      - '.github/workflows/phpstan.yml'
+    - '**.php'
+    - 'phpstan.neon.dist'
+    - '.github/workflows/phpstan.yml'
 
 jobs:
   phpstan:
@@ -13,16 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+    - uses: actions/checkout@v6
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-          coverage: none
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.5'
+        coverage: none
 
-      - name: Install composer dependencies
-        uses: ramsey/composer-install@v4
+    - name: Install composer dependencies
+      uses: ramsey/composer-install@v4
 
-      - name: Run PHPStan
-        run: ./vendor/bin/phpstan --error-format=github
+    - name: Run PHPStan
+      run: ./vendor/bin/phpstan --error-format=github
