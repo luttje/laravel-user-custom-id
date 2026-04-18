@@ -24,7 +24,11 @@ class Month extends FormatChunk
     {
         // https://www.php.net/manual/en/datetime.format.php
         $validMonthFormats = [
-            'F', 'M', 'm', 'n', 't',
+            'F',
+            'M',
+            'm',
+            'n',
+            't',
         ];
         $format = (string) $this->getParameter('format');
 
