@@ -2,6 +2,7 @@
 
 namespace Luttje\UserCustomId;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Luttje\UserCustomId\Exceptions\InvalidFormatException;
 use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
@@ -13,6 +14,12 @@ class UserCustomIdManager
      * The longest format that fits in the database column.
      */
     public const MAX_FORMAT_LENGTH = 255;
+
+    /**
+     * How often generating an id is tried again when the database reports
+     * a deadlock, which can happen when many ids are generated at once.
+     */
+    public const GENERATE_ATTEMPTS = 3;
 
     public function __construct(
         protected ?FormatChunkRepository $formatChunkRepository = null,
@@ -51,12 +58,18 @@ class UserCustomIdManager
             ? $targetOrClass->getMorphClass()
             : $targetOrClass;
 
-        $customId = UserCustomId::where('target_type', $targetClass)
-            ->where('owner_id', $owner->getKey())
-            ->where('owner_type', $owner->getMorphClass())
-            ->first();
+        return $this->query($targetClass, $owner)->first();
+    }
 
-        return $customId;
+    /**
+     * @return Builder<UserCustomId>
+     */
+    protected function query(string $targetClass, Model $owner): Builder
+    {
+        return UserCustomId::query()
+            ->where('target_type', $targetClass)
+            ->where('owner_id', $owner->getKey())
+            ->where('owner_type', $owner->getMorphClass());
     }
 
     public function getId(Model $target, Model $owner): ?string
@@ -86,9 +99,23 @@ class UserCustomIdManager
      */
     public function generateFor(Model $target, Model $owner): ?string
     {
-        $customId = $this->get($target, $owner);
+        // Reading the last value, working out the next one and storing it must
+        // happen as one step. Otherwise two requests at the same time both
+        // continue from the same last value and end up with the same id.
+        //
+        // The row is locked until the transaction ends. When called inside a
+        // transaction of your own (e.g. together with saving the target) the
+        // lock is kept until that one ends, and the counter is rolled back
+        // with it.
+        return (new UserCustomId)->getConnection()->transaction(function () use ($target, $owner) {
+            $customId = $this->query($target->getMorphClass(), $owner)
+                ->lockForUpdate()
+                ->first();
 
-        if ($customId) {
+            if (! $customId) {
+                return null;
+            }
+
             $chunks = $this->parseCustomId($customId);
             $nextCustomId = $this->generateNextCustomId($chunks, $target, $owner);
 
@@ -99,9 +126,7 @@ class UserCustomIdManager
             ]);
 
             return $nextCustomId;
-        }
-
-        return null;
+        }, static::GENERATE_ATTEMPTS);
     }
 
     /**

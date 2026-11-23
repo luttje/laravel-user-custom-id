@@ -144,6 +144,14 @@ class Category extends Model implements ExposesCustomIdAttributes, HasUserCustom
 
 With the above implementation an ID will automatically be generated upon [the Eloquent `creating` event](https://laravel.com/docs/10.x/eloquent#events) for the model. It will store the ID in the configured attribute of the model.
 
+### Uniqueness
+
+When an ID is generated, the configuration of the owner is locked in a database transaction. This way two requests at the same time will not both get the same `{increment}` number.
+
+* The number is taken when the ID is generated, not when the model is saved. If saving the model fails afterwards, that number is skipped. To prevent such gaps, generate the ID and save the model inside one `DB::transaction(...)`: the number is then given back when the transaction is rolled back.
+* The package can't promise that a format results in unique ID's: nothing stops a user from choosing a format like `product` or `{year}`. If the ID's must be unique, add a unique index for it (e.g. `$table->unique(['owner_id', 'custom_id'])`) so the database refuses duplicates.
+* Row locks are a feature of MySQL, MariaDB, PostgreSQL and SQL Server. SQLite locks the whole database for writes instead.
+
 ### Customizing the Owner Model
 
 You can designate any model as the ID style's owner, not just the logged in user. Provide the owner model as the second argument to generateFor. Or have the `getOwner()` method in your model that implements the `HasUserCustomId` interface return the owner model.
