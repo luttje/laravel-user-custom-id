@@ -22,6 +22,8 @@ You can install the package via composer:
 composer require luttje/laravel-user-custom-id
 ```
 
+Upgrading from an earlier version? Read the [upgrade guide](UPGRADING.md) first.
+
 ## 👨‍🔧 Usage
 
 ### Scenario
