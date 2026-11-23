@@ -8,6 +8,13 @@ on:
     - "phpunit.xml.dist"
     - "composer.json"
     - "composer.lock"
+  # No path filter here: the "tests-passed" job below is meant to be a required
+  # status check, and a required check that never runs would block the PR.
+  pull_request:
+
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -67,6 +74,18 @@ jobs:
       uses: coverallsapp/github-action@v2
       with:
         parallel: true
+
+  # Single job that summarises the whole matrix, so branch protection only
+  # needs to require one check name.
+  tests-passed:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - name: Fail unless every matrix job succeeded
+      if: ${{ needs.test.result != 'success' }}
+      run: exit 1
 
   finish:
     needs: test

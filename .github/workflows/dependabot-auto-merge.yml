@@ -9,7 +9,9 @@ jobs:
   dependabot:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    # Check who opened the PR, not who triggered the event: github.actor can be
+    # dependabot on a PR that someone else opened.
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
     steps:
 
       - name: Dependabot metadata
@@ -18,13 +20,8 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Auto-merge Dependabot PRs for semver-minor updates
-        if: ${{steps.metadata.outputs.update-type == 'version-update:semver-minor'}}
-        run: gh pr merge --auto --merge "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
+      # Only patch updates are merged automatically, and only once the required
+      # status checks on main have passed. Minor and major updates wait for a human.
       - name: Auto-merge Dependabot PRs for semver-patch updates
         if: ${{steps.metadata.outputs.update-type == 'version-update:semver-patch'}}
         run: gh pr merge --auto --merge "$PR_URL"
