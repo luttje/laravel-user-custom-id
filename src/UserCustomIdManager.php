@@ -40,7 +40,8 @@ class UserCustomIdManager
 
     public function createFormat(string $targetClass, Model $owner, string $format, string $targetAttribute, ?FormatChunkCollection $lastValueChunks = null): UserCustomId
     {
-        $customId = UserCustomId::create([
+        // Only the format is mass assignable, the rest is set explicitly.
+        $customId = (new UserCustomId)->forceFill([
             'target_type' => $targetClass,
             'owner_id' => $owner->getKey(),
             'owner_type' => $owner->getMorphClass(),
@@ -48,6 +49,8 @@ class UserCustomIdManager
             'target_attribute' => $targetAttribute,
             'last_target_custom_id' => $lastValueChunks,
         ]);
+
+        $customId->save();
 
         return $customId;
     }
@@ -121,9 +124,8 @@ class UserCustomIdManager
 
             $target->{$customId->target_attribute} = $nextCustomId;
 
-            $customId->update([
-                'last_target_custom_id' => $chunks,
-            ]);
+            $customId->last_target_custom_id = $chunks;
+            $customId->save();
 
             return $nextCustomId;
         }, static::GENERATE_ATTEMPTS);

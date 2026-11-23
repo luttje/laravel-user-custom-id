@@ -55,6 +55,9 @@ UserCustomId::createFormat(
 
 This setup requires the target model (e.g., `Product`), the user, the ID style, and the attribute to store the ID (`custom_id`). Whenever a product belonging to the user is created, the ID will be generated according to this format. It will be stored in the `custom_id` attribute of the product.
 
+> [!WARNING]
+> Only the format should come from your users. Decide the target model, the owner and the attribute to store the ID in yourself: a user that can choose the attribute could have the ID written over any attribute of the model. For that reason `format` is the only attribute of the configuration that can be mass assigned (e.g. `$customId->update($request->validated())`).
+
 ### ID Generation
 
 There are two methods to generate IDs:

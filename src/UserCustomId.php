@@ -21,13 +21,17 @@ use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
  */
 class UserCustomId extends Model
 {
+    /**
+     * Only the format is meant to come from user input.
+     *
+     * The other attributes decide who owns the configuration, which model
+     * class it applies to and which attribute of that model gets written.
+     * If those could be mass assigned, passing request data to fill() or
+     * update() would let a user aim the generated id at any attribute.
+     * Use UserCustomId::createFormat(...) to set them.
+     */
     protected $fillable = [
-        'owner_id',
-        'owner_type',
-        'target_type',
-        'target_attribute',
         'format',
-        'last_target_custom_id',
     ];
 
     protected $casts = [
