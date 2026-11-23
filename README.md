@@ -90,12 +90,18 @@ Apply the `HasUserCustomId` interface and `WithUserCustomId` trait to your model
 <!-- #EXAMPLE_COPY_START = { "symbol": "\\Luttje\\UserCustomId\\Tests\\Fixtures\\Models\\Category", "short": false } -->
 
 ```php
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Luttje\UserCustomId\Contracts\ExposesCustomIdAttributes;
 use Luttje\UserCustomId\Contracts\HasUserCustomId;
 use Luttje\UserCustomId\Traits\WithUserCustomId;
 
-class Category extends Model implements HasUserCustomId
+/**
+ * @property User|null $owner
+ * @property Collection<int, Product> $products
+ */
+class Category extends Model implements ExposesCustomIdAttributes, HasUserCustomId
 {
     use HasUuids;
     use WithUserCustomId;
@@ -110,6 +116,14 @@ class Category extends Model implements HasUserCustomId
     protected $hidden = [
         'id',
     ];
+
+    public function getCustomIdAttributes(): array
+    {
+        return [
+            'name',
+            'owner.name',
+        ];
+    }
 
     public function owner()
     {
@@ -136,6 +150,29 @@ You can designate any model as the ID style's owner, not just the logged in user
 
 Depending on your situation it might make more sense to have a `Tenant` or `Team` model be the owner of the ID style.
 
+### Exposing attributes to formats
+
+Formats are written by your users, so the attribute chunks (like `{attribute-owner:name}`) can only read attributes that a model explicitly exposes. Implement the `ExposesCustomIdAttributes` interface on every owner and target model that formats should be able to read from:
+
+```php
+use Luttje\UserCustomId\Contracts\ExposesCustomIdAttributes;
+
+class User extends Authenticatable implements ExposesCustomIdAttributes
+{
+    public function getCustomIdAttributes(): array
+    {
+        return [
+            'name',
+        ];
+    }
+}
+```
+
+Attributes of a related model are listed on the target model with dot notation (e.g. `'category.name'` to allow `{attribute-relation:category:name}`).
+
+> [!WARNING]
+> **Models that do not implement this interface expose nothing.** Any attribute that is not listed shows up as `***` in the generated ID. Only list attributes that the user who writes the format is allowed to see.
+
 ### Understanding Format Chunks
 
 Formats are made of "chunks," placeholders for specific values. For example, `product-{attribute-owner:name}-{random:5}-{increment}` contains several chunks:
@@ -154,8 +191,8 @@ Each chunk follows the `{name:parameters}` format, with specific parameters for 
 * `{increment:amount:group-by:group-symbol}`: Incrementing numbers.
 * `{attribute-owner:attribute:start:length}`: Owner model attribute value (or a part of it)
 * `{random:length:characters}`: Random characters.
-* `{attribute-target:attribute:start:length}`: Target model attribute value (or a part of it)
-* `{attribute-relation:attribute:start:length}`: Related model attribute value (or a part of it)
+* `{attribute:attribute:start:length}`: Target model attribute value (or a part of it)
+* `{attribute-relation:relation:attribute:start:length}`: Related model attribute value (or a part of it)
 * `{uuid:version}`: Universally unique identifier
 * Time Chunks: `{year}`, `{month:format}`, `{day}`, etc.
 

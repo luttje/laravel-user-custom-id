@@ -71,7 +71,7 @@ final class TargetAttributeTest extends FormatChunkTestCase
         $this->assertEquals('67890', $chunk->getNextValue($category, $owner));
     }
 
-    public function test_target_attribute_cannot_access_non_existant()
+    public function test_target_attribute_cannot_access_unlisted()
     {
         $chunk = $this->getChunk('attribute', ['asdasdasdasdasdasd']);
 
@@ -81,7 +81,7 @@ final class TargetAttributeTest extends FormatChunkTestCase
             'owner_id' => $owner->id,
         ]);
 
-        $this->assertEquals('', $chunk->getNextValue($category, $owner));
+        $this->assertEquals('***', $chunk->getNextValue($category, $owner));
     }
 
     public function test_target_attribute_cannot_access_hidden()

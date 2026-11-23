@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Luttje\UserCustomId\Contracts\ExposesCustomIdAttributes;
 use Luttje\UserCustomId\Tests\Fixtures\Database\Factories\UserFactory;
 
-class User extends Authenticatable
+class User extends Authenticatable implements ExposesCustomIdAttributes
 {
     use HasFactory;
     use Notifiable;
@@ -42,6 +43,16 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * The attributes that user-defined id formats are allowed to read.
+     */
+    public function getCustomIdAttributes(): array
+    {
+        return [
+            'name',
+        ];
+    }
 
     /**
      * The categories owned by this user.

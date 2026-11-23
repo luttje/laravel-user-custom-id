@@ -49,6 +49,9 @@ Used to display an incrementing number.
 
 Used to display the value of a specific attribute of the owner model.
 
+> [!WARNING]
+> The attribute must be listed in `getCustomIdAttributes()` of the model (see the `ExposesCustomIdAttributes` interface). Attributes that are not listed, and all attributes of models that don't implement the interface, are displayed as `***`. This goes for all attribute chunks.
+
 * `attribute`: the name of the attribute to display.
 * `start`: the start position of the value. Defaults to `0`.
 * `length`: the length of the value. Defaults to `-1` to indicate the full length of the value.
@@ -86,14 +89,14 @@ Filled with random characters.
 * `__2sSAD__`
 * `__3QJ5A__`
 
-### `{attribute-target:attribute:start:length}`
+### `{attribute:attribute:start:length}`
 
 Almost exactly the same as the [`{attribute-owner:attribute:start:length}`](#attribute-ownerattributestartlength) chunk, except that it uses the target model instead of the owner model.
 
 **💻 Example:**
 
 ```php
-'{attribute-target:category_id}/{increment}'
+'{attribute:category_id}/{increment}'
 ```
 
 **🏷 Possible sequence of id's:**
@@ -104,14 +107,19 @@ Almost exactly the same as the [`{attribute-owner:attribute:start:length}`](#att
 * `42/5002`
 * `42/5003`
 
-### `{attribute-relation:attribute:start:length}`
+### `{attribute-relation:relation:attribute:start:length}`
 
-Almost exactly the same as the [`{attribute-target:attribute:start:length}`](#attribute-ownerattributestartlength) chunk, except that it uses a relation of the target model instead of the owner model.
+Almost exactly the same as the [`{attribute:attribute:start:length}`](#attributeattributestartlength) chunk, except that it reads the attribute from a relation of the target model.
+
+* `relation`: the name of the relation on the target model.
+* `attribute`: the name of the attribute of the related model to display.
+
+The **target** model decides what is exposed, using dot notation: `'category.name'` must be listed in the `getCustomIdAttributes()` of the target model.
 
 **💻 Example:**
 
 ```php
-'{attribute-relation:category:name:5}@{increment}'
+'{attribute-relation:category:name:0:5}@{increment}'
 ```
 
 **🏷 Possible sequence of id's:**

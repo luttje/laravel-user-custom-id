@@ -23,9 +23,20 @@ class TargetRelationAttribute extends Attribute
     public function getNextValue(Model $target, Model $owner): mixed
     {
         $relation = $this->getParameter('relation');
+        $attribute = $this->getParameter('attribute');
+
+        // The target decides which attributes of its relations are exposed,
+        // so check before the relation is even loaded.
+        if (! self::isAllowed($target, $relation.'.'.$attribute)) {
+            return self::MASK;
+        }
 
         $related = $target->{$relation};
 
-        return $this->getAttributeValue($related);
+        if (! $related instanceof Model) {
+            return null;
+        }
+
+        return $this->readAttribute($related);
     }
 }

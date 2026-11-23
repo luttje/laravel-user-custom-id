@@ -78,7 +78,7 @@ final class OwnerAttributeTest extends FormatChunkTestCase
         $this->assertEquals('User', $chunk->getNextValue($category, $owner));
     }
 
-    public function test_owner_attribute_cannot_access_non_existant()
+    public function test_owner_attribute_cannot_access_unlisted()
     {
         $chunk = $this->getChunk('attribute-owner', ['asdasdasdasdasdasd']);
 
@@ -90,7 +90,7 @@ final class OwnerAttributeTest extends FormatChunkTestCase
             'owner_id' => $owner->id,
         ]);
 
-        $this->assertEquals('', $chunk->getNextValue($category, $owner));
+        $this->assertEquals('***', $chunk->getNextValue($category, $owner));
     }
 
     public function test_owner_attribute_cannot_access_hidden()
