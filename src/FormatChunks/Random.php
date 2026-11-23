@@ -59,10 +59,13 @@ class Random extends FormatChunk
     }
 
     /**
-     * Wrapper for the rand function to make it easier to mock.
+     * Wrapper for the random function to make it easier to mock.
+     *
+     * Uses the cryptographically secure generator: what rand() returns can
+     * be predicted by someone that has seen enough earlier ids.
      */
     public function getRandomNumber(int $min, int $max): int
     {
-        return rand($min, $max);
+        return random_int($min, $max);
     }
 }

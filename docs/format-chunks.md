@@ -74,7 +74,7 @@ Used to display the value of a specific attribute of the owner model.
 
 ### `{random:length:characters}`
 
-Filled with random characters.
+Filled with random characters, picked with a cryptographically secure random number generator.
 
 * `length`: the amount of random characters to display, between `1` and `255`. Defaults to `10`.
 * `characters`: the characters to pick from for the random string. Defaults to `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`.
