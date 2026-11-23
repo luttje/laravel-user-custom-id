@@ -19,6 +19,24 @@ class Random extends FormatChunk
         ];
     }
 
+    /**
+     * The most random characters a single chunk may generate.
+     */
+    public const MAX_LENGTH = 255;
+
+    protected function validateParameters(): void
+    {
+        $length = (int) $this->getParameter('length');
+
+        if ($length < 1 || $length > static::MAX_LENGTH) {
+            throw new \InvalidArgumentException("The parameter 'length' for chunk type '".static::getChunkId()."' must be between 1 and ".static::MAX_LENGTH.'.');
+        }
+
+        if ($this->getParameter('characters') === '') {
+            throw new \InvalidArgumentException("The parameter 'characters' for chunk type '".static::getChunkId()."' cannot be empty.");
+        }
+    }
+
     public function getNextValue(Model $target, Model $owner): mixed
     {
         return $this->generateRandom((int) $this->getParameter('length'));

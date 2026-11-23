@@ -34,6 +34,19 @@ class UserCustomId extends Model
         'last_target_custom_id' => FormatChunkCollectionCast::class,
     ];
 
+    /**
+     * Formats are written by users, so never store one that can't be
+     * used to generate ids: it would break creating the target models.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (self $customId) {
+            if ($customId->isDirty('format')) {
+                app(UserCustomIdManager::class)->validateFormat((string) $customId->format);
+            }
+        });
+    }
+
     public function owner()
     {
         return $this->morphTo();

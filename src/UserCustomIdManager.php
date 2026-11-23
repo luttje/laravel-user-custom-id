@@ -3,11 +3,17 @@
 namespace Luttje\UserCustomId;
 
 use Illuminate\Database\Eloquent\Model;
+use Luttje\UserCustomId\Exceptions\InvalidFormatException;
 use Luttje\UserCustomId\FormatChunks\FormatChunkCollection;
 use Luttje\UserCustomId\FormatChunks\Literal;
 
 class UserCustomIdManager
 {
+    /**
+     * The longest format that fits in the database column.
+     */
+    public const MAX_FORMAT_LENGTH = 255;
+
     public function __construct(
         protected ?FormatChunkRepository $formatChunkRepository = null,
     ) {
@@ -116,19 +122,75 @@ class UserCustomIdManager
     }
 
     /**
-     * Parses the given custom id and returns an collection of chunks.
+     * Checks that the given format can be used to generate ids, without
+     * generating one. Call this (or use the ValidFormat validation rule)
+     * before storing a format that a user wrote.
+     *
+     * @throws InvalidFormatException with a message that can be shown to the user.
+     */
+    public function validateFormat(string $format): void
+    {
+        if ($format === '') {
+            throw new InvalidFormatException('The format cannot be empty.');
+        }
+
+        if (strlen($format) > static::MAX_FORMAT_LENGTH) {
+            throw new InvalidFormatException('The format cannot be longer than '.static::MAX_FORMAT_LENGTH.' characters.');
+        }
+
+        try {
+            $this->parseFormat($format);
+        } catch (\InvalidArgumentException $e) {
+            if ($e instanceof InvalidFormatException) {
+                throw $e;
+            }
+
+            // Thrown by the chunks when their parameters are wrong.
+            throw new InvalidFormatException($e->getMessage(), previous: $e);
+        }
+    }
+
+    public function isValidFormat(string $format): bool
+    {
+        try {
+            $this->validateFormat($format);
+        } catch (InvalidFormatException) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Parses the format of the given custom id, continuing from the
+     * last value that was generated for it.
+     */
+    protected function parseCustomId(UserCustomId $customId): FormatChunkCollection
+    {
+        return $this->parseFormat($customId->format, $customId->last_target_custom_id);
+    }
+
+    /**
+     * Parses the given format and returns an collection of chunks.
      * Chunks are identified by the curly braces. If the curly braces
      * are prefixed with a backslash, they will be treated as a literal
      * curly brace and not as a chunk.
      *
      * For literal texts a Literal chunk will be used, for other chunks
      * the appropriate chunk type will be used from FormatChunkRepository.
+     *
+     * @param  FormatChunkCollection|null  $lastValueChunks  The last value that was generated for this format.
+     *
+     * @throws InvalidFormatException when the format refers to a chunk that isn't registered.
+     * @throws \InvalidArgumentException when the parameters of a chunk are wrong.
      */
-    protected function parseCustomId(UserCustomId $customId): FormatChunkCollection
+    public function parseFormat(string $format, ?FormatChunkCollection $lastValueChunks = null): FormatChunkCollection
     {
-        $lastValueChunks = $customId->last_target_custom_id;
-        $format = $customId->format;
         $chunks = [];
+
+        // How often each chunk type has been seen, so every chunk
+        // continues from its own last value.
+        $occurrences = [];
 
         $currentChunkString = '';
 
@@ -144,7 +206,7 @@ class UserCustomIdManager
             }
 
             if ($char === '{' && ! $isEscaped) {
-                if ($currentChunkString) {
+                if ($currentChunkString !== '') {
                     $literal = new Literal;
                     $literal->setValue($currentChunkString);
 
@@ -160,12 +222,19 @@ class UserCustomIdManager
             if ($char === '}' && ! $isEscaped) {
                 $currentChunkString .= $char;
 
-                $chunk = $this->formatChunkRepository->getChunk($currentChunkString, $lastValueChunks);
+                $id = explode(':', trim($currentChunkString, '{}'))[0];
+                $occurrence = $occurrences[$id] ?? 0;
+
+                // Literals are made from the text between chunks, they can't be asked for.
+                $chunk = $id === Literal::getChunkId()
+                    ? null
+                    : $this->formatChunkRepository->getChunk($currentChunkString, $lastValueChunks, $occurrence);
 
                 if (! $chunk) {
-                    throw new \Exception("The chunk '{$currentChunkString}' is not registered.");
+                    throw new InvalidFormatException("The chunk '{$currentChunkString}' is not registered.");
                 }
 
+                $occurrences[$id] = $occurrence + 1;
                 $chunks[] = $chunk;
 
                 $currentChunkString = '';
@@ -177,7 +246,7 @@ class UserCustomIdManager
             $isEscaped = false;
         }
 
-        if ($currentChunkString) {
+        if ($currentChunkString !== '') {
             $literal = new Literal;
             $literal->setValue($currentChunkString);
 

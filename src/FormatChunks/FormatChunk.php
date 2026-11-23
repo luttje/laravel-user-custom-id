@@ -63,7 +63,20 @@ abstract class FormatChunk implements Arrayable
 
             $this->setParameter($name, $value);
         }
+
+        $this->validateParameters();
     }
+
+    /**
+     * Checks that the values of the parameters make sense for this chunk,
+     * after they've been cast to the right type.
+     *
+     * Parameters come from formats written by users, so this is the place
+     * to enforce limits (e.g: a maximum length).
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function validateParameters(): void {}
 
     /**
      * Returns the chunk id as it appears in the format string.

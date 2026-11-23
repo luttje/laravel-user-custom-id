@@ -29,9 +29,11 @@ Because `{` and `}` have special meaning, you can't use them as is. You can disa
 
 Used to display an incrementing number.
 
-* `amount`: the amount to increment by. Defaults to `1`.
+* `amount`: the amount to increment by. Defaults to `1`. Cannot be `0`.
 * `group-by`: the amount of numbers to group together. Defaults to `0` to indicate no grouping.
-* `group-symbol`: the symbol to use to separate the groups. Defaults to `-`.
+* `group-symbol`: the symbol to use to separate the groups. Defaults to `-`. Cannot contain digits.
+
+The counter stops (an `OverflowException` is thrown) once it would go beyond 14 digits.
 
 **💻 Example:**
 
@@ -74,7 +76,7 @@ Used to display the value of a specific attribute of the owner model.
 
 Filled with random characters.
 
-* `length`: the amount of random characters to display.
+* `length`: the amount of random characters to display, between `1` and `255`. Defaults to `10`.
 * `characters`: the characters to pick from for the random string. Defaults to `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`.
 
 **💻 Example:**

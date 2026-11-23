@@ -79,8 +79,10 @@ class FormatChunkRepository
      *
      * @param  string  $chunkString  The chunk string to parse (e.g: {increment:5:00000})
      * @param  FormatChunkCollection  $lastValueChunks  The last value that was generated for this format.
+     * @param  int  $occurrence  Which chunk of this type it is in the format (0 for the first, 1 for the second, etc.)
+     *                           so that it continues from its own last value and not that of another chunk of the same type.
      */
-    public function getChunk(string $chunkString, ?FormatChunkCollection $lastValueChunks = null): ?FormatChunk
+    public function getChunk(string $chunkString, ?FormatChunkCollection $lastValueChunks = null, int $occurrence = 0): ?FormatChunk
     {
         $chunkString = trim($chunkString, '{}');
         $parts = explode(':', $chunkString);
@@ -95,8 +97,14 @@ class FormatChunkRepository
         $chunk = new $chunkType(...array_slice($parts, 1));
 
         if ($lastValueChunks) {
+            $seen = 0;
+
             foreach ($lastValueChunks as $lastValueChunk) {
-                if ($lastValueChunk->getChunkId() === $id) {
+                if ($lastValueChunk->getChunkId() !== $id) {
+                    continue;
+                }
+
+                if ($seen++ === $occurrence) {
                     $chunk->setValue($lastValueChunk->getValue());
                     break;
                 }

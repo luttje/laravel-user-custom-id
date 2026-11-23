@@ -173,6 +173,25 @@ Attributes of a related model are listed on the target model with dot notation (
 > [!WARNING]
 > **Models that do not implement this interface expose nothing.** Any attribute that is not listed shows up as `***` in the generated ID. Only list attributes that the user who writes the format is allowed to see.
 
+### Validating formats
+
+A format is checked when it is stored: `UserCustomId::createFormat(...)` (and changing the `format` of an existing configuration) throws an `InvalidFormatException` if the format can't be used to generate ID's. For example when it contains an unknown chunk, or asks for more than 255 random characters.
+
+To show your users a validation error instead, use the `ValidFormat` rule when they submit their format:
+
+```php
+use Luttje\UserCustomId\Rules\ValidFormat;
+
+$request->validate([
+    'format' => ['required', 'string', new ValidFormat],
+]);
+```
+
+You can also call `UserCustomId::validateFormat($format)` or `UserCustomId::isValidFormat($format)` yourself.
+
+> [!NOTE]
+> This only checks that an ID can be generated. It does not limit which characters a user puts in the literal parts of their format. If you use the ID's in URLs, file names or exports, add your own rule for that (e.g. a `regex` rule).
+
 ### Understanding Format Chunks
 
 Formats are made of "chunks," placeholders for specific values. For example, `product-{attribute-owner:name}-{random:5}-{increment}` contains several chunks:
