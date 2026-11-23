@@ -61,7 +61,8 @@ final class TimeTest extends FormatChunkTestCase
 
         $chunk = $this->getChunk('month', ['M']);
 
-        $this->assertEquals('mrt.', $this->getNextValue($chunk));
+        // Newer Carbon versions dropped the trailing dot from nl_NL short month names
+        $this->assertMatchesRegularExpression('/^mrt\.?$/', $this->getNextValue($chunk));
 
         $chunk = $this->getChunk('month', ['m']);
 
